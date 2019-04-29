@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+    <EditText
+            android:id="@+id/mapWidthInputView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/hint_map_width"
+            android:inputType="number"
+            tools:ignore="Autofill,LabelFor"/>
+
+    <EditText
+            android:id="@+id/mapHeightInputView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/hint_map_height"
+            android:inputType="number"
+            tools:ignore="Autofill,LabelFor"/>
+
+    <EditText
+            android:id="@+id/noiseScaleInputView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/hint_noise_scale"
+            android:inputType="numberDecimal"
+            tools:ignore="Autofill,LabelFor"/>
+
+</LinearLayout>

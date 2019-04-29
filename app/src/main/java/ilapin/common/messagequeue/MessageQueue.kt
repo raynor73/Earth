@@ -1,4 +1,4 @@
-package ilapin.common
+package ilapin.common.messagequeue
 
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject

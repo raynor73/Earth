@@ -3,4 +3,10 @@
 
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="generate_map">Generate Map</string>
+    <string name="hint_map_width">Map Width</string>
+    <string name="hint_map_height">Map Height</string>
+    <string name="hint_noise_scale">Noise Scale</string>
+    <string name="generate_map_title">Map Params</string>
+    <string name="ok">OK</string>
 </resources>

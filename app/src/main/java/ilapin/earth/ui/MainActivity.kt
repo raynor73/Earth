@@ -2,14 +2,21 @@ package ilapin.earth.ui
 
 import android.content.res.Configuration
 import android.opengl.GLSurfaceView
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
+import android.view.Menu
+import android.view.MenuItem
 import ilapin.earth.R
+import ilapin.earth.domain.terrainscene.GenerateMapMessage
 import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), GenerateMapDialog.Listener {
 
     private var renderer: GLSurfaceViewRenderer? = null
+
+    private var mapWidth = 100
+    private var mapHeight = 100
+    private var noiseScale = 0.3f
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,6 +29,30 @@ class MainActivity : AppCompatActivity() {
             glView.setRenderer(renderer)
             glView.renderMode = GLSurfaceView.RENDERMODE_CONTINUOUSLY
             containerLayout.addView(glView, 0)
+        }
+    }
+
+    override fun onMapParamsReceived(mapWidth: Int, mapHeight: Int, noiseScale: Float) {
+        this.mapWidth = mapWidth
+        this.mapHeight = mapHeight
+        this.noiseScale = noiseScale
+        renderer?.putMessage(GenerateMapMessage(mapWidth, mapHeight, noiseScale))
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_main, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.generateMapMenuItem -> {
+                GenerateMapDialog
+                    .newInstance(mapWidth, mapHeight, noiseScale)
+                    .show(supportFragmentManager, "GenerateMapDialog")
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
         }
     }
 

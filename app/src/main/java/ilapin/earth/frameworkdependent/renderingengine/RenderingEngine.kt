@@ -1,13 +1,11 @@
 package ilapin.earth.frameworkdependent.renderingengine
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.opengl.GLES20
 import android.opengl.GLUtils
-import ilapin.earth.domain.renderingengine.MeshRenderingRepository
-import ilapin.earth.domain.renderingengine.NoParentGameObjectError
-import ilapin.earth.domain.renderingengine.RenderingSettingsRepository
-import ilapin.earth.domain.renderingengine.TextureLoadingRepository
+import ilapin.earth.domain.renderingengine.*
 import ilapin.engine3d.MeshComponent
 import ilapin.engine3d.PerspectiveCameraComponent
 import org.joml.Vector3f
@@ -18,8 +16,9 @@ class RenderingEngine(
     private val cameraProvider: () -> PerspectiveCameraComponent?
 ) : MeshRenderingRepository,
     RenderingSettingsRepository,
-    TextureLoadingRepository {
-
+    TextureLoadingRepository,
+    TextureCreationRepository
+{
     private val uniformFillingVisitor = UniformFillingVisitor(this)
     private val meshRenderers = ArrayList<MeshRendererComponent>()
 
@@ -61,6 +60,8 @@ class RenderingEngine(
     }
 
     override fun loadTexture(textureName: String) {
+        deleteTextureIfExists(textureName)
+
         val textureIdsOut = IntArray(1)
         GLES20.glGenTextures(1, textureIdsOut, 0)
         textureIds[textureName] = textureIdsOut[0]
@@ -81,6 +82,29 @@ class RenderingEngine(
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0)
     }
 
+    override fun createTexture(textureName: String, width: Int, height: Int, data: IntArray) {
+        deleteTextureIfExists(textureName)
+
+        val textureIdsOut = IntArray(1)
+        GLES20.glGenTextures(1, textureIdsOut, 0)
+        textureIds[textureName] = textureIdsOut[0]
+
+        val bitmap = Bitmap.createBitmap(data, width, height, Bitmap.Config.ARGB_8888)
+
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureIdsOut[0])
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR_MIPMAP_LINEAR)
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR)
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_REPEAT)
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_REPEAT)
+
+        GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0)
+
+        bitmap.recycle()
+
+        GLES20.glGenerateMipmap(GLES20.GL_TEXTURE_2D)
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0)
+    }
+
     fun getTextureId(textureName: String): Int {
         return textureIds[textureName] ?: throw IllegalArgumentException("Unknown texture name: $textureName")
     }
@@ -93,5 +117,13 @@ class RenderingEngine(
 
     fun updateCameraConfig(config: PerspectiveCameraComponent.Config) {
         cameraProvider.invoke()?.config = config
+    }
+
+    private fun deleteTextureIfExists(textureName: String) {
+        textureIds[textureName]?.let {
+            val textureIdsToDelete = IntArray(1)
+            textureIdsToDelete[0] = it
+            GLES20.glDeleteTextures(1, textureIdsToDelete, 0)
+        }
     }
 }

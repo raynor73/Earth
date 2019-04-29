@@ -3,11 +3,13 @@ package ilapin.earth.ui
 import android.content.Context
 import android.opengl.GLES20
 import android.opengl.GLSurfaceView
-import ilapin.earth.domain.earthscene.EarthScene
-import ilapin.earth.frameworkdependent.meshloader.ObjMeshLoadingRepository
+import ilapin.common.messagequeue.MessageQueue
+import ilapin.earth.domain.terrainscene.GenerateMapMessage
+import ilapin.earth.domain.terrainscene.TerrainScene
 import ilapin.earth.frameworkdependent.renderingengine.RenderingEngine
 import ilapin.earth.frameworkdependent.time.LocalTimeRepository
 import ilapin.engine3d.PerspectiveCameraComponent
+import io.reactivex.disposables.Disposable
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
@@ -15,11 +17,15 @@ class GLSurfaceViewRenderer(
     private val context: Context
 ) : GLSurfaceView.Renderer {
 
+    private val messageQueue = MessageQueue()
+    private var subscription: Disposable? = null
+
     private var renderingEngine: RenderingEngine? = null
-    private var earthScene: EarthScene? = null
+    private var scene: TerrainScene? = null
 
     override fun onDrawFrame(gl: GL10) {
-        earthScene?.update()
+        messageQueue.update()
+        scene?.update()
         renderingEngine?.render()
     }
 
@@ -35,15 +41,30 @@ class GLSurfaceViewRenderer(
     }
 
     override fun onSurfaceCreated(gl: GL10, config: EGLConfig) {
-        val renderingEngine = RenderingEngine(context) { earthScene?.camera }
+        val renderingEngine = RenderingEngine(context) { scene?.camera }
         this.renderingEngine = renderingEngine
-        earthScene = EarthScene(
+        scene = TerrainScene(
             renderingEngine,
             renderingEngine,
             renderingEngine,
-            ObjMeshLoadingRepository(context),
             LocalTimeRepository()
         )
+        subscription = messageQueue.messages().subscribe { message ->
+            when (message) {
+                is GenerateMapMessage -> {
+                    scene?.mapGenerator?.also {
+                        it.mapWidth = message.mapWidth
+                        it.mapHeight = message.mapHeight
+                        it.noiseScale = message.noiseScale
+                        it.generateMap()
+                    }
+                }
+            }
+        }
+    }
+
+    fun putMessage(message: Any) {
+        messageQueue.putMessage(message)
     }
 
     fun onCleared() {
