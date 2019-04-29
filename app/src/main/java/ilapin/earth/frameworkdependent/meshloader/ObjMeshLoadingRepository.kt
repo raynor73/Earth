@@ -3,7 +3,7 @@ package ilapin.earth.frameworkdependent.meshloader
 import android.content.Context
 import de.javagl.obj.ObjReader
 import de.javagl.obj.ObjUtils
-import ilapin.earth.domain.earthscene.MeshLoadingRepository
+import ilapin.earth.domain.meshloader.MeshLoadingRepository
 import ilapin.engine3d.MeshComponent
 
 class ObjMeshLoadingRepository(private val context: Context) : MeshLoadingRepository {

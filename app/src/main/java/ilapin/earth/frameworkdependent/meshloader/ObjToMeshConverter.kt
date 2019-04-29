@@ -1,9 +1,9 @@
 package ilapin.earth.frameworkdependent.meshloader
 
 import de.javagl.obj.Obj
-import ilapin.earth.domain.earthscene.NoNormalIndices
-import ilapin.earth.domain.earthscene.NoTextureCoordinateIndices
-import ilapin.earth.domain.earthscene.NotTriangularFace
+import ilapin.earth.domain.meshloader.NoNormalIndices
+import ilapin.earth.domain.meshloader.NoTextureCoordinateIndices
+import ilapin.earth.domain.meshloader.NotTriangularFace
 import ilapin.engine3d.MeshComponent
 import org.joml.Vector2f
 import org.joml.Vector3f

@@ -1,5 +1,6 @@
 package ilapin.earth.domain.earthscene
 
+import ilapin.earth.domain.meshloader.MeshLoadingRepository
 import ilapin.earth.domain.renderingengine.MeshRenderingRepository
 import ilapin.earth.domain.renderingengine.RenderingSettingsRepository
 import ilapin.earth.domain.renderingengine.TextureLoadingRepository
