@@ -50,6 +50,10 @@ class TerrainScene(
         prevTimestamp = currentTimestamp
     }
 
+    fun drawColorMap(width: Int, height: Int, colorMap: IntArray) {
+        textureCreationRepository.createTexture("noiseTexture", width, height, colorMap)
+    }
+
     fun drawNoiseMap(noiseMap: Array<FloatArray>) {
         val width = noiseMap.size
         val height = noiseMap[0].size
@@ -66,6 +70,6 @@ class TerrainScene(
             }
         }
 
-        textureCreationRepository.createTexture("noiseTexture", width, height, data)
+        drawColorMap(width, height, data)
     }
 }

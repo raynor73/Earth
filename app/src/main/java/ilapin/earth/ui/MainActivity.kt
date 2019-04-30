@@ -6,8 +6,12 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import ilapin.earth.R
 import ilapin.earth.domain.terrainscene.GenerateMapMessage
+import ilapin.earth.domain.terrainscene.MapGenerator
 import kotlinx.android.synthetic.main.activity_main.*
 import org.joml.Vector2f
 import org.joml.Vector2fc
@@ -16,6 +20,7 @@ class MainActivity : AppCompatActivity(), GenerateMapDialog.Listener {
 
     private var renderer: GLSurfaceViewRenderer? = null
 
+    private var drawMode = MapGenerator.DrawMode.COLOR_MAP
     private var mapWidth = 100
     private var mapHeight = 100
     private var seed = 21
@@ -46,6 +51,25 @@ class MainActivity : AppCompatActivity(), GenerateMapDialog.Listener {
             decreaseButton.setOnClickListener {
                 noiseScale -= 1f
                 sendGenerateMapMessage()
+            }
+        }
+
+        ArrayAdapter.createFromResource(this, R.array.draw_modes, android.R.layout.simple_spinner_item).also { adapter ->
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            drawModeSelectorView.adapter = adapter
+            drawModeSelectorView.setSelection(1)
+            drawModeSelectorView.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+
+                override fun onNothingSelected(parent: AdapterView<*>?) {
+                }
+
+                override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                    drawMode = when (position) {
+                        1 -> MapGenerator.DrawMode.COLOR_MAP
+                        else -> MapGenerator.DrawMode.NOISE_MAP
+                    }
+                    sendGenerateMapMessage()
+                }
             }
         }
     }
@@ -96,7 +120,7 @@ class MainActivity : AppCompatActivity(), GenerateMapDialog.Listener {
 
     private fun sendGenerateMapMessage() {
         renderer?.putMessage(GenerateMapMessage(
-            mapWidth, mapHeight, seed, noiseScale, octaves, persistence, lacunarity, offset
+            drawMode, mapWidth, mapHeight, seed, noiseScale, octaves, persistence, lacunarity, offset
         ))
     }
 }

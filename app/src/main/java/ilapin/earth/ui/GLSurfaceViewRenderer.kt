@@ -53,6 +53,7 @@ class GLSurfaceViewRenderer(
             when (message) {
                 is GenerateMapMessage -> {
                     scene?.mapGenerator?.also {
+                        it.drawMode = message.drawMode
                         it.mapWidth = message.mapWidth
                         it.mapHeight = message.mapHeight
                         it.seed = message.seed

@@ -12,6 +12,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="right|center_vertical"
             android:orientation="vertical"
+            android:background="@drawable/bg_white_rounded_corners"
             tools:ignore="RtlHardcoded,UselessParent">
 
         <Button
@@ -24,6 +25,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/decrease_button"/>
+
+        <android.support.v7.widget.AppCompatSpinner
+                android:id="@+id/drawModeSelectorView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@android:style/Widget.Holo.Spinner"
+                android:prompt="@string/draw_mode_prompt"
+                android:spinnerMode="dialog"/>
 
     </LinearLayout>
 

@@ -17,4 +17,11 @@
     <string name="hint_offset_y">Offset Y</string>
     <string name="increase_button">+</string>
     <string name="decrease_button">-</string>
+
+    <string name="draw_mode_prompt">Режим отрисовки</string>
+
+    <string-array name="draw_modes">
+        <item>Шум</item>
+        <item>Цвета</item>
+    </string-array>
 </resources>
