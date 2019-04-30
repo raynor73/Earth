@@ -1,5 +1,7 @@
 package ilapin.earth.domain.terrainscene
 
+import ilapin.common.android.log.L
+import ilapin.earth.App.Companion.LOG_TAG
 import ilapin.earth.domain.renderingengine.MeshRenderingRepository
 import ilapin.earth.domain.renderingengine.RenderingSettingsRepository
 import ilapin.earth.domain.renderingengine.TextureCreationRepository
@@ -58,7 +60,10 @@ class TerrainScene(
 
         for (y: Int in 0 until height) {
             for (x: Int in 0 until width) {
-                val colorComponent = (0xff * ((noiseMap[x][y] + 1) / 2)).toInt()
+                if (noiseMap[x][y] > 1 || noiseMap[x][y] < 0) {
+                    L.d(LOG_TAG, "Noise value is out of range: ${noiseMap[x][y]}")
+                }
+                val colorComponent = (0xff * noiseMap[x][y]).toInt()
                 data[y * width + x] = 0xff000000.toInt() or
                         (colorComponent shl 16) or
                         (colorComponent shl 8) or

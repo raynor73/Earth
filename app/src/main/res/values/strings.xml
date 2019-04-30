@@ -9,4 +9,7 @@
     <string name="hint_noise_scale">Noise Scale</string>
     <string name="generate_map_title">Map Params</string>
     <string name="ok">OK</string>
+    <string name="hint_octaves">Octaves</string>
+    <string name="hint_persistence">Persistence</string>
+    <string name="hint_lacunarity">Lacunarity</string>
 </resources>

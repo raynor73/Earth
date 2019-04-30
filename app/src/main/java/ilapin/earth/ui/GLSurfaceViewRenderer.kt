@@ -56,6 +56,9 @@ class GLSurfaceViewRenderer(
                         it.mapWidth = message.mapWidth
                         it.mapHeight = message.mapHeight
                         it.noiseScale = message.noiseScale
+                        it.octaves = message.octaves
+                        it.persistence = message.persistence
+                        it.lacunarity = message.lacunarity
                         it.generateMap()
                     }
                 }

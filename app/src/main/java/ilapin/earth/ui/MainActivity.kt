@@ -16,7 +16,10 @@ class MainActivity : AppCompatActivity(), GenerateMapDialog.Listener {
 
     private var mapWidth = 100
     private var mapHeight = 100
-    private var noiseScale = 0.3f
+    private var noiseScale = 30f
+    private var octaves = 4
+    private var persistence = 0.5f
+    private var lacunarity = 2f
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,11 +35,22 @@ class MainActivity : AppCompatActivity(), GenerateMapDialog.Listener {
         }
     }
 
-    override fun onMapParamsReceived(mapWidth: Int, mapHeight: Int, noiseScale: Float) {
+    override fun onMapParamsReceived(
+        mapWidth: Int,
+        mapHeight: Int,
+        noiseScale: Float,
+        octaves: Int,
+        persistence: Float,
+        lacunarity: Float
+    ) {
         this.mapWidth = mapWidth
         this.mapHeight = mapHeight
         this.noiseScale = noiseScale
-        renderer?.putMessage(GenerateMapMessage(mapWidth, mapHeight, noiseScale))
+        this.octaves = octaves
+        this.persistence = persistence
+        this.lacunarity = lacunarity
+
+        renderer?.putMessage(GenerateMapMessage(mapWidth, mapHeight, noiseScale, octaves, persistence, lacunarity))
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -48,7 +62,7 @@ class MainActivity : AppCompatActivity(), GenerateMapDialog.Listener {
         return when (item.itemId) {
             R.id.generateMapMenuItem -> {
                 GenerateMapDialog
-                    .newInstance(mapWidth, mapHeight, noiseScale)
+                    .newInstance(mapWidth, mapHeight, noiseScale, octaves, persistence, lacunarity)
                     .show(supportFragmentManager, "GenerateMapDialog")
                 true
             }
