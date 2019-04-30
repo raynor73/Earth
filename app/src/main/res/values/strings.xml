@@ -15,4 +15,6 @@
     <string name="hint_seed">Seed</string>
     <string name="hint_offset_x">Offset X</string>
     <string name="hint_offset_y">Offset Y</string>
+    <string name="increase_button">+</string>
+    <string name="decrease_button">-</string>
 </resources>

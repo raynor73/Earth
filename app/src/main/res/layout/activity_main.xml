@@ -5,4 +5,26 @@
         android:id="@+id/containerLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".ui.MainActivity"/>
+        tools:context=".ui.MainActivity">
+
+    <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right|center_vertical"
+            android:orientation="vertical"
+            tools:ignore="RtlHardcoded,UselessParent">
+
+        <Button
+                android:id="@+id/increaseButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/increase_button"/>
+        <Button
+                android:id="@+id/decreaseButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/decrease_button"/>
+
+    </LinearLayout>
+
+</FrameLayout>

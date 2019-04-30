@@ -37,9 +37,16 @@ class MainActivity : AppCompatActivity(), GenerateMapDialog.Listener {
             glView.renderMode = GLSurfaceView.RENDERMODE_CONTINUOUSLY
             containerLayout.addView(glView, 0)
 
-            renderer?.putMessage(GenerateMapMessage(
-                mapWidth, mapHeight, seed, noiseScale, octaves, persistence, lacunarity, offset
-            ))
+            sendGenerateMapMessage()
+
+            increaseButton.setOnClickListener {
+                noiseScale += 1f
+                sendGenerateMapMessage()
+            }
+            decreaseButton.setOnClickListener {
+                noiseScale -= 1f
+                sendGenerateMapMessage()
+            }
         }
     }
 
@@ -62,9 +69,7 @@ class MainActivity : AppCompatActivity(), GenerateMapDialog.Listener {
         this.lacunarity = lacunarity
         this.offset.set(offset)
 
-        renderer?.putMessage(GenerateMapMessage(
-            mapWidth, mapHeight, seed, noiseScale, octaves, persistence, lacunarity, offset
-        ))
+        sendGenerateMapMessage()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -87,5 +92,11 @@ class MainActivity : AppCompatActivity(), GenerateMapDialog.Listener {
     override fun onDestroy() {
         super.onDestroy()
         renderer?.onCleared()
+    }
+
+    private fun sendGenerateMapMessage() {
+        renderer?.putMessage(GenerateMapMessage(
+            mapWidth, mapHeight, seed, noiseScale, octaves, persistence, lacunarity, offset
+        ))
     }
 }
