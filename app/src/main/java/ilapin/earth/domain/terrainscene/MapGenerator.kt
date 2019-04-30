@@ -5,8 +5,14 @@ import org.joml.Vector2f
 class MapGenerator(private val terrainScene: TerrainScene) {
 
     private val regions = arrayOf(
-        TerrainType("Water", 0.4f, 0xff4372d0.toInt()),
-        TerrainType("Land", 1f, 0xff569717.toInt())
+        TerrainType("Water Deep", 0.3f, 0xff3463c2.toInt()),
+        TerrainType("Water Shallow", 0.4f, 0xff3867c8.toInt()),
+        TerrainType("Sand", 0.45f, 0xffd0d17f.toInt()),
+        TerrainType("Grass", 0.55f, 0xff569718.toInt()),
+        TerrainType("Grass 2", 0.6f, 0xff3f6a14.toInt()),
+        TerrainType("Rock", 0.7f, 0xff5c433f.toInt()),
+        TerrainType("Rock 2", 0.9f, 0xff4c3a38.toInt()),
+        TerrainType("Snow", 1f, 0xfffefefe.toInt())
     )
 
     var drawMode = DrawMode.NOISE_MAP
