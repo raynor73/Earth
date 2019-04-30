@@ -139,5 +139,47 @@ class MeshFactory {
                 listOf(0, 1, 2, 2, 3, 0)
             )
         }
+
+        fun createTerrainMesh(heightMap: Array<FloatArray>): MeshComponent {
+            val width = heightMap.size
+            val height = heightMap[0].size
+            val topLeftX = (width - 1) / -2f
+            val topLeftZ = (height - 1) / 2f
+
+            val vertices = Array(width * height) { Vector3f() }
+            val normals = Array(width * height) { Vector3f() }
+            val uvs = Array(width * height) { Vector2f() }
+            val indices = IntArray((width - 1) * (height - 1) * 6)
+
+            var vertexIndex = 0
+
+            for (y: Int in 0 until height) {
+                for (x: Int in 0 until width) {
+                    vertices[vertexIndex].set(topLeftX + x, heightMap[x][y], topLeftZ - y)
+                    normals[vertexIndex].set(0f, 1f, 0f)
+                    uvs[vertexIndex].set(x / width.toFloat(), y / height.toFloat())
+
+                    if (x < width - 1 && y < height -1) {
+                        vertexIndex = addTriangle(
+                            indices, vertexIndex, vertexIndex, vertexIndex + width + 1, vertexIndex + width
+                        )
+                        vertexIndex = addTriangle(
+                            indices, vertexIndex, vertexIndex + width + 1, vertexIndex, vertexIndex + 1
+                        )
+                    }
+
+                    vertexIndex++
+                }
+            }
+
+            return MeshComponent(vertices.toList(), normals.toList(), uvs.toList(), indices.toList())
+        }
+
+        private fun addTriangle(indices: IntArray, triangleIndex: Int, a: Int, b: Int, c: Int): Int {
+            indices[triangleIndex] = a
+            indices[triangleIndex + 1] = b
+            indices[triangleIndex + 2] = c
+            return triangleIndex + 3
+        }
     }
 }
