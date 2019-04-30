@@ -20,7 +20,7 @@ class RenderingEngine(
     TextureCreationRepository
 {
     private val uniformFillingVisitor = UniformFillingVisitor(this)
-    private val meshRenderers = ArrayList<MeshRendererComponent>()
+    private val meshRenderers = HashMap<MeshComponent, MeshRendererComponent>()
 
     private val textureIds = HashMap<String, Int>()
 
@@ -56,7 +56,13 @@ class RenderingEngine(
             cameraProvider.invoke()
         }
         gameObject.addComponent(meshRendererComponent)
-        meshRenderers += meshRendererComponent
+        meshRenderers[mesh] = meshRendererComponent
+    }
+
+    override fun removeMeshFromRenderList(mesh: MeshComponent) {
+        if (meshRenderers.remove(mesh) == null) {
+            throw IllegalArgumentException("Can't find mesh renderer to remove")
+        }
     }
 
     override fun loadTexture(textureName: String) {
@@ -114,7 +120,7 @@ class RenderingEngine(
     fun render() {
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT or GLES20.GL_DEPTH_BUFFER_BIT)
 
-        meshRenderers.forEach { it.render(ambientShader) }
+        meshRenderers.values.forEach { it.render(ambientShader) }
     }
 
     fun updateCameraConfig(config: PerspectiveCameraComponent.Config) {
