@@ -1,5 +1,7 @@
 package ilapin.earth.domain.terrainscene
 
+import org.joml.Vector2f
+
 class MapGenerator(private val terrainScene: TerrainScene) {
 
     var mapWidth = 0
@@ -10,8 +12,20 @@ class MapGenerator(private val terrainScene: TerrainScene) {
     var persistence = 0f
     var lacunarity = 0f
 
+    var seed = 0
+    val offset = Vector2f()
+
     fun generateMap() {
-        val noiseMap = generateNoiseMap(mapWidth, mapHeight, noiseScale, octaves, persistence, lacunarity)
+        val noiseMap = generateNoiseMap(
+            mapWidth,
+            mapHeight,
+            seed,
+            noiseScale,
+            octaves,
+            persistence,
+            lacunarity,
+            offset
+        )
 
         terrainScene.drawNoiseMap(noiseMap)
     }

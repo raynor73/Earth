@@ -9,6 +9,8 @@ import android.view.MenuItem
 import ilapin.earth.R
 import ilapin.earth.domain.terrainscene.GenerateMapMessage
 import kotlinx.android.synthetic.main.activity_main.*
+import org.joml.Vector2f
+import org.joml.Vector2fc
 
 class MainActivity : AppCompatActivity(), GenerateMapDialog.Listener {
 
@@ -16,10 +18,12 @@ class MainActivity : AppCompatActivity(), GenerateMapDialog.Listener {
 
     private var mapWidth = 100
     private var mapHeight = 100
-    private var noiseScale = 30f
+    private var seed = 21
+    private var noiseScale = 27.6f
     private var octaves = 4
     private var persistence = 0.5f
-    private var lacunarity = 2f
+    private var lacunarity = 1.87f
+    private val offset = Vector2f(13.4f, 6.26f)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,25 +36,35 @@ class MainActivity : AppCompatActivity(), GenerateMapDialog.Listener {
             glView.setRenderer(renderer)
             glView.renderMode = GLSurfaceView.RENDERMODE_CONTINUOUSLY
             containerLayout.addView(glView, 0)
+
+            renderer?.putMessage(GenerateMapMessage(
+                mapWidth, mapHeight, seed, noiseScale, octaves, persistence, lacunarity, offset
+            ))
         }
     }
 
     override fun onMapParamsReceived(
         mapWidth: Int,
         mapHeight: Int,
+        seed: Int,
         noiseScale: Float,
         octaves: Int,
         persistence: Float,
-        lacunarity: Float
+        lacunarity: Float,
+        offset: Vector2fc
     ) {
         this.mapWidth = mapWidth
         this.mapHeight = mapHeight
+        this.seed = seed
         this.noiseScale = noiseScale
         this.octaves = octaves
         this.persistence = persistence
         this.lacunarity = lacunarity
+        this.offset.set(offset)
 
-        renderer?.putMessage(GenerateMapMessage(mapWidth, mapHeight, noiseScale, octaves, persistence, lacunarity))
+        renderer?.putMessage(GenerateMapMessage(
+            mapWidth, mapHeight, seed, noiseScale, octaves, persistence, lacunarity, offset
+        ))
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -62,7 +76,7 @@ class MainActivity : AppCompatActivity(), GenerateMapDialog.Listener {
         return when (item.itemId) {
             R.id.generateMapMenuItem -> {
                 GenerateMapDialog
-                    .newInstance(mapWidth, mapHeight, noiseScale, octaves, persistence, lacunarity)
+                    .newInstance(mapWidth, mapHeight, seed, noiseScale, octaves, persistence, lacunarity, offset)
                     .show(supportFragmentManager, "GenerateMapDialog")
                 true
             }

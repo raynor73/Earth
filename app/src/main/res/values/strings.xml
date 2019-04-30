@@ -12,4 +12,7 @@
     <string name="hint_octaves">Octaves</string>
     <string name="hint_persistence">Persistence</string>
     <string name="hint_lacunarity">Lacunarity</string>
+    <string name="hint_seed">Seed</string>
+    <string name="hint_offset_x">Offset X</string>
+    <string name="hint_offset_y">Offset Y</string>
 </resources>

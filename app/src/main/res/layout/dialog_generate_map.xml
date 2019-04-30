@@ -8,54 +8,146 @@
     <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
             android:orientation="vertical">
 
-        <EditText
-                android:id="@+id/mapWidthInputView"
+        <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/hint_map_width"
-                android:inputType="number"
-                tools:ignore="Autofill,LabelFor"/>
+                android:layout_marginTop="8dp">
 
-        <EditText
-                android:id="@+id/mapHeightInputView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/hint_map_height"
-                android:inputType="number"
-                tools:ignore="Autofill,LabelFor"/>
+            <EditText
+                    android:id="@+id/mapWidthInputView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/hint_map_width"
+                    android:inputType="number"
+                    tools:ignore="Autofill,LabelFor"/>
 
-        <EditText
-                android:id="@+id/noiseScaleInputView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/hint_noise_scale"
-                android:inputType="numberDecimal"
-                tools:ignore="Autofill,LabelFor"/>
+        </android.support.design.widget.TextInputLayout>
 
-        <EditText
-                android:id="@+id/octavesInputView"
+        <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/hint_octaves"
-                android:inputType="number"
-                tools:ignore="Autofill,LabelFor"/>
+                android:layout_height="wrap_content">
 
-        <EditText
-                android:id="@+id/persistenceInputView"
+            <EditText
+                    android:id="@+id/mapHeightInputView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/hint_map_height"
+                    android:inputType="number"
+                    tools:ignore="Autofill,LabelFor"/>
+
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            <EditText
+                    android:id="@+id/seedInputView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/hint_seed"
+                    android:inputType="number"
+                    tools:ignore="Autofill,LabelFor"/>
+
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            <EditText
+                    android:id="@+id/noiseScaleInputView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/hint_noise_scale"
+                    android:inputType="numberDecimal"
+                    tools:ignore="Autofill,LabelFor"/>
+
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            <EditText
+                    android:id="@+id/octavesInputView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/hint_octaves"
+                    android:inputType="number"
+                    tools:ignore="Autofill,LabelFor"/>
+
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            <EditText
+                    android:id="@+id/persistenceInputView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/hint_persistence"
+                    android:inputType="numberDecimal"
+                    tools:ignore="Autofill,LabelFor"/>
+
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            <EditText
+                    android:id="@+id/lacunarityInputView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/hint_lacunarity"
+                    android:inputType="numberDecimal"
+                    tools:ignore="Autofill,LabelFor"/>
+
+        </android.support.design.widget.TextInputLayout>
+
+        <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/hint_persistence"
-                android:inputType="numberDecimal"
-                tools:ignore="Autofill,LabelFor"/>
-        <EditText
-                android:id="@+id/lacunarityInputView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/hint_lacunarity"
-                android:inputType="numberDecimal"
-                tools:ignore="Autofill,LabelFor"/>
+                android:baselineAligned="false"
+                android:orientation="horizontal">
+
+            <android.support.design.widget.TextInputLayout
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content">
+
+                <EditText
+                        android:id="@+id/offsetXInputView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/hint_offset_x"
+                        android:inputType="numberDecimal"
+                        tools:ignore="Autofill,LabelFor"/>
+
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content">
+
+                <EditText
+                        android:id="@+id/offsetYInputView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/hint_offset_y"
+                        android:inputType="numberDecimal"
+                        tools:ignore="Autofill,LabelFor"/>
+
+            </android.support.design.widget.TextInputLayout>
+
+        </LinearLayout>
 
     </LinearLayout>
 
