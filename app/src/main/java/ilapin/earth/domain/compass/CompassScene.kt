@@ -1,19 +1,19 @@
 package ilapin.earth.domain.compass
 
-import ilapin.earth.domain.magneticfield.MagneticFieldRepository
+import ilapin.earth.domain.orientation.OrientationRepository
 import ilapin.earth.domain.renderingengine.MeshRenderingRepository
 import ilapin.earth.domain.renderingengine.RenderingSettingsRepository
 import ilapin.earth.domain.renderingengine.TextureCreationRepository
 import ilapin.engine3d.*
 import io.reactivex.disposables.Disposable
+import org.joml.Matrix4f
 import org.joml.Quaternionf
 import org.joml.Vector2f
 import org.joml.Vector3f
-import org.joml.Vector3fc
 
 class CompassScene(
     renderingSettingsRepository: RenderingSettingsRepository,
-    magneticFieldRepository: MagneticFieldRepository,
+    orientationRepository: OrientationRepository,
     textureCreationRepository: TextureCreationRepository,
     meshRenderingRepository: MeshRenderingRepository
 ) {
@@ -22,10 +22,8 @@ class CompassScene(
 
     private var subscription: Disposable? = null
 
-    private val originArrowDirection: Vector3fc = Vector3f(0f, 1f, 0f)
-
     private val tmpQuaternion = Quaternionf()
-    private val tmpVector = Vector3f()
+    private val tmpMatrix = Matrix4f()
 
     private val arrowTransform = TransformationComponent(
         Vector3f(0f, -0.5f, -3f),
@@ -60,10 +58,9 @@ class CompassScene(
         renderingSettingsRepository.setClearColor(0.2f, 0.2f, 0.2f, 0f)
         renderingSettingsRepository.setAmbientColor(1f, 1f, 1f)
 
-        subscription = magneticFieldRepository.magneticField().subscribe { magneticField ->
-            tmpVector.set(magneticField.x, magneticField.y, magneticField.z)
-            tmpVector.normalize()
-            tmpQuaternion.identity().rotationTo(originArrowDirection, tmpVector)
+        subscription = orientationRepository.orientation().subscribe { orientation ->
+            tmpMatrix.set(orientation.rotationMatrix).invert()
+            tmpQuaternion.setFromUnnormalized(tmpMatrix)
             arrowTransform.rotation = tmpQuaternion
         }
     }

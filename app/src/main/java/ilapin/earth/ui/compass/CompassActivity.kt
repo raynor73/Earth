@@ -7,9 +7,13 @@ import android.opengl.GLSurfaceView
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import ilapin.earth.R
+import ilapin.earth.domain.acceleration.AccelerationRepository
 import ilapin.earth.domain.magneticfield.MagneticFieldRepository
+import ilapin.earth.domain.orientation.OrientationRepository
+import ilapin.earth.frameworkdependent.acceleration.SensorAccelerationRepository
 import ilapin.earth.frameworkdependent.magneticfield.SensorMagneticFieldRepository
-import io.reactivex.disposables.Disposable
+import ilapin.earth.frameworkdependent.orientation.SoftwareOrientationRepository
+import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.activity_compass.*
 import kotlinx.android.synthetic.main.activity_main.containerLayout
 
@@ -17,9 +21,11 @@ class CompassActivity : AppCompatActivity() {
 
     private var renderer: GLSurfaceViewRenderer? = null
 
-    private var subscription: Disposable? = null
+    private val subscriptions = CompositeDisposable()
 
     private lateinit var magneticFieldRepository: MagneticFieldRepository
+    private lateinit var accelerationRepository: AccelerationRepository
+    private lateinit var orientationRepository: OrientationRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,6 +33,11 @@ class CompassActivity : AppCompatActivity() {
 
         val sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
         magneticFieldRepository = SensorMagneticFieldRepository(sensorManager)
+        accelerationRepository = SensorAccelerationRepository(sensorManager)
+        orientationRepository = SoftwareOrientationRepository(
+            accelerationRepository,
+            magneticFieldRepository
+        )
 
         if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
             renderer = GLSurfaceViewRenderer(this)
@@ -49,20 +60,22 @@ class CompassActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
 
-        subscription = magneticFieldRepository.magneticField().subscribe { magneticField ->
-            renderer?.putMessage(magneticField)
+        subscriptions.add(magneticFieldRepository.magneticField().subscribe { magneticField ->
             magneticFieldView.text = getString(
                 R.string.magnetic_field_values,
                 magneticField.x.toString(),
                 magneticField.y.toString(),
                 magneticField.z.toString()
             )
-        }
+        })
+        subscriptions.add(orientationRepository.orientation().subscribe { orientation ->
+            renderer?.putMessage(orientation)
+        })
     }
 
     override fun onPause() {
         super.onPause()
-        subscription?.dispose()
+        subscriptions.clear()
     }
 
     override fun onDestroy() {

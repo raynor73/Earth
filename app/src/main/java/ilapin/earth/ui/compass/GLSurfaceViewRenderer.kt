@@ -5,7 +5,7 @@ import android.opengl.GLES20
 import android.opengl.GLSurfaceView
 import ilapin.common.messagequeue.MessageQueue
 import ilapin.earth.domain.compass.CompassScene
-import ilapin.earth.frameworkdependent.magneticfield.MagneticFieldFromMessageQueueRepository
+import ilapin.earth.frameworkdependent.orientation.OrientationFromMessageQueueRepository
 import ilapin.earth.frameworkdependent.renderingengine.RenderingEngine
 import ilapin.engine3d.PerspectiveCameraComponent
 import javax.microedition.khronos.egl.EGLConfig
@@ -41,7 +41,7 @@ class GLSurfaceViewRenderer(
         this.renderingEngine = renderingEngine
         scene = CompassScene(
             renderingEngine,
-            MagneticFieldFromMessageQueueRepository(messageQueue),
+            OrientationFromMessageQueueRepository(messageQueue),
             renderingEngine,
             renderingEngine
         )
