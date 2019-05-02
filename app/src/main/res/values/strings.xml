@@ -1,4 +1,5 @@
 <resources>
+
     <string name="app_name">Earth</string>
 
     <string name="dummy_button">Dummy Button</string>
@@ -24,4 +25,8 @@
         <item>Шум</item>
         <item>Цвета</item>
     </string-array>
+
+    <string name="magnetic_field_values">Magnetic field\nx: %1$s μT\ny: %2$s μT\nz: %3$s μT</string>
+    <string name="n_a">N/A</string>
+
 </resources>

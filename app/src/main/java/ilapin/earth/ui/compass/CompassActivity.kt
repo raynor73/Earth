@@ -10,7 +10,8 @@ import ilapin.earth.R
 import ilapin.earth.domain.magneticfield.MagneticFieldRepository
 import ilapin.earth.frameworkdependent.magneticfield.SensorMagneticFieldRepository
 import io.reactivex.disposables.Disposable
-import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_compass.*
+import kotlinx.android.synthetic.main.activity_main.containerLayout
 
 class CompassActivity : AppCompatActivity() {
 
@@ -35,6 +36,14 @@ class CompassActivity : AppCompatActivity() {
             glView.renderMode = GLSurfaceView.RENDERMODE_CONTINUOUSLY
             containerLayout.addView(glView, 0)
         }
+
+        val notAvailableString = getString(R.string.n_a)
+        magneticFieldView.text = getString(
+            R.string.magnetic_field_values,
+            notAvailableString,
+            notAvailableString,
+            notAvailableString
+        )
     }
 
     override fun onResume() {
@@ -42,6 +51,12 @@ class CompassActivity : AppCompatActivity() {
 
         subscription = magneticFieldRepository.magneticField().subscribe { magneticField ->
             renderer?.putMessage(magneticField)
+            magneticFieldView.text = getString(
+                R.string.magnetic_field_values,
+                magneticField.x.toString(),
+                magneticField.y.toString(),
+                magneticField.z.toString()
+            )
         }
     }
 

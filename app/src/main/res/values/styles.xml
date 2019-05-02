@@ -20,4 +20,9 @@
         <item name="android:background">@color/black_overlay</item>
     </style>
 
+    <style name="SensorInfo">
+        <item name="android:fontFamily">serif-monospace</item>
+        <item name="android:textColor">#00ffff</item>
+    </style>
+
 </resources>
