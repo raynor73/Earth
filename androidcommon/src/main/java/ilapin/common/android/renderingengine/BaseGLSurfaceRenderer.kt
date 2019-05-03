@@ -20,6 +20,7 @@ abstract class BaseGLSurfaceRenderer(
 
     override fun onDrawFrame(gl: GL10) {
         messageQueue.update()
+        scene?.update()
         renderingEngine.render()
     }
 

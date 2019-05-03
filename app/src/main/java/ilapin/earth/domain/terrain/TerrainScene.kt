@@ -46,7 +46,7 @@ class TerrainScene(
         renderingSettingsRepository.setAmbientColor(1f, 1f, 1f)
     }
 
-    fun update() {
+    override fun update() {
         rootGameObject.update()
         val currentTimestamp = timeRepository.getTimestamp()
         prevTimestamp?.let {

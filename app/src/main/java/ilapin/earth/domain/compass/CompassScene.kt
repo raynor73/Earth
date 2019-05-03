@@ -65,6 +65,8 @@ class CompassScene(
         }
     }
 
+    override fun update() {}
+
     override fun onCleared() {
         subscription?.dispose()
     }

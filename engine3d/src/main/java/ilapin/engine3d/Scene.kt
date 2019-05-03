@@ -4,5 +4,7 @@ interface Scene {
 
     val camera: PerspectiveCameraComponent
 
+    fun update()
+
     fun onCleared()
 }
