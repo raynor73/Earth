@@ -1,9 +1,9 @@
 package ilapin.earth.domain.compass
 
-import ilapin.earth.domain.orientation.OrientationRepository
-import ilapin.earth.domain.renderingengine.MeshRenderingRepository
-import ilapin.earth.domain.renderingengine.RenderingSettingsRepository
-import ilapin.earth.domain.renderingengine.TextureCreationRepository
+import ilapin.common.orientation.OrientationRepository
+import ilapin.common.renderingengine.MeshRenderingRepository
+import ilapin.common.renderingengine.RenderingSettingsRepository
+import ilapin.common.renderingengine.TextureCreationRepository
 import ilapin.engine3d.*
 import io.reactivex.disposables.Disposable
 import org.joml.Matrix4f
@@ -16,7 +16,7 @@ class CompassScene(
     orientationRepository: OrientationRepository,
     textureCreationRepository: TextureCreationRepository,
     meshRenderingRepository: MeshRenderingRepository
-) {
+) : Scene {
 
     private val rootGameObject = GameObject()
 
@@ -31,7 +31,7 @@ class CompassScene(
         Vector3f(1f, 1f, 1f)
     )
 
-    val camera = PerspectiveCameraComponent()
+    override val camera = PerspectiveCameraComponent()
 
     init {
         val cameraGameObject = GameObject()
@@ -65,7 +65,7 @@ class CompassScene(
         }
     }
 
-    fun onCleared() {
+    override fun onCleared() {
         subscription?.dispose()
     }
 }
