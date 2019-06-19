@@ -24,7 +24,8 @@ class TerrainScene(
 
     val mapGenerator = MapGenerator(this)
 
-    override val camera = PerspectiveCameraComponent()
+    private val camera = PerspectiveCameraComponent()
+    override val cameras: List<CameraComponent> = listOf(camera)
 
     init {
         val cameraGameObject = GameObject()
@@ -40,7 +41,7 @@ class TerrainScene(
         textureCreationRepository.createTexture("noiseTexture", 1, 1, intArrayOf(0xffffffff.toInt()))
         quadGameObject.addComponent(MaterialComponent("noiseTexture"))
         rootGameObject.addChild(quadGameObject)
-        meshRenderingRepository.addMeshToRenderList(quadMesh)
+        meshRenderingRepository.addMeshToRenderList(camera, quadMesh)
 
         renderingSettingsRepository.setClearColor(0.2f, 0.2f, 0.2f, 0f)
         renderingSettingsRepository.setAmbientColor(1f, 1f, 1f)
@@ -99,15 +100,15 @@ class TerrainScene(
         cameraTransform.position = Vector3f(0f, 0f, 3f)
         cameraTransform.rotation = Quaternionf().identity()
         cameraTransform.scale = Vector3f(1f, 1f, 1f)
-        terrainMesh?.let { meshRenderingRepository.removeMeshFromRenderList(it) }
-        meshRenderingRepository.addMeshToRenderList(quadMesh)
+        terrainMesh?.let { meshRenderingRepository.removeMeshFromRenderList(camera, it) }
+        meshRenderingRepository.addMeshToRenderList(camera, quadMesh)
     }
 
     private fun demonstrateTerrain() {
         cameraTransform.position = Vector3f(-60f, 10f, 60f)
         cameraTransform.rotation = Quaternionf().identity().rotateY((-Math.PI / 2).toFloat())
         cameraTransform.scale = Vector3f(1f, 1f, 1f)
-        meshRenderingRepository.removeMeshFromRenderList(quadMesh)
-        terrainMesh?.let { meshRenderingRepository.addMeshToRenderList(it) }
+        meshRenderingRepository.removeMeshFromRenderList(camera, quadMesh)
+        terrainMesh?.let { meshRenderingRepository.addMeshToRenderList(camera, it) }
     }
 }

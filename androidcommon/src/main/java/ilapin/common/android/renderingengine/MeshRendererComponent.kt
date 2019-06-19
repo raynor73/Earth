@@ -7,10 +7,7 @@ import java.nio.Buffer
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
-class MeshRendererComponent(
-    private val uniformFillingVisitor: UniformFillingVisitor,
-    private val cameraProvider: () -> CameraComponent?
-) : GameObjectComponent() {
+class MeshRendererComponent(private val uniformFillingVisitor: UniformFillingVisitor) : GameObjectComponent() {
 
     companion object {
 
@@ -29,10 +26,10 @@ class MeshRendererComponent(
     private val bufferMatrix = Matrix4f()
     private val bufferFloatArray = FloatArray(16)
 
-    fun render(shader: Shader) {
+    fun render(camera: CameraComponent, shader: Shader) {
         val material = gameObject?.getComponent(MaterialComponent::class.java) ?: return
         val transformation = gameObject?.getComponent(TransformationComponent::class.java) ?: return
-        val viewProjectionMatrix = cameraProvider.invoke()?.getViewProjectionMatrix() ?: return
+        val viewProjectionMatrix = camera.getViewProjectionMatrix() ?: return
 
         if (cachedVertexBuffer == null) {
             val mesh = gameObject?.getComponent(MeshComponent::class.java) ?: return

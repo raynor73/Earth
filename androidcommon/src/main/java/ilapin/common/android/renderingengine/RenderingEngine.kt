@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory
 import android.opengl.GLES20
 import android.opengl.GLUtils
 import ilapin.common.renderingengine.*
+import ilapin.engine3d.CameraComponent
 import ilapin.engine3d.MeshComponent
 import ilapin.engine3d.Scene
 import org.joml.Vector3f
@@ -21,6 +22,7 @@ class RenderingEngine(
 {
     private val uniformFillingVisitor = UniformFillingVisitor(this)
     private val meshRenderers = HashMap<MeshComponent, MeshRendererComponent>()
+    private val meshRendererCameras = HashMap<CameraComponent, MeshRendererComponent>()
 
     private val textureIds = HashMap<String, Int>()
 
@@ -50,16 +52,20 @@ class RenderingEngine(
         _ambientColor.set(red, green, blue)
     }
 
-    override fun addMeshToRenderList(mesh: MeshComponent) {
+    override fun addMeshToRenderList(camera: CameraComponent, mesh: MeshComponent) {
         val gameObject = mesh.gameObject ?: throw NoParentGameObjectError()
-        val meshRendererComponent = MeshRendererComponent(uniformFillingVisitor) { sceneProvider.invoke()?.camera }
+        val meshRendererComponent = MeshRendererComponent(uniformFillingVisitor)
         gameObject.addComponent(meshRendererComponent)
         meshRenderers[mesh] = meshRendererComponent
+        meshRendererCameras[camera] = meshRendererComponent
     }
 
-    override fun removeMeshFromRenderList(mesh: MeshComponent) {
+    override fun removeMeshFromRenderList(camera: CameraComponent, mesh: MeshComponent) {
         if (meshRenderers.remove(mesh) == null) {
             throw IllegalArgumentException("Can't find mesh renderer to remove")
+        }
+        if (meshRendererCameras.remove(camera) == null) {
+            throw IllegalArgumentException("Can't find mesh renderer's camera to remove")
         }
     }
 
@@ -118,7 +124,9 @@ class RenderingEngine(
     fun render() {
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT or GLES20.GL_DEPTH_BUFFER_BIT)
 
-        meshRenderers.values.forEach { it.render(ambientShader) }
+        sceneProvider.invoke()?.cameras?.forEach { camera ->
+            meshRenderers.values.forEach { it.render(camera, ambientShader) }
+        }
     }
 
     fun onScreenConfigUpdate(width: Int, height: Int) {

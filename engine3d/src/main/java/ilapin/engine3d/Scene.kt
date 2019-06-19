@@ -2,7 +2,7 @@ package ilapin.engine3d
 
 interface Scene {
 
-    val camera: CameraComponent
+    val cameras: List<CameraComponent>
 
     fun update()
 

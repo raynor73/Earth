@@ -48,7 +48,7 @@ class EarthScene(
         earthGameObject.addComponent(MaterialComponent(textureName))
         textureLoadingRepository.loadTexture(textureName)
         rootGameObject.addChild(earthGameObject)
-        renderingRepository.addMeshToRenderList(earthMesh)
+        renderingRepository.addMeshToRenderList(camera, earthMesh)
 
         renderingSettingsRepository.setClearColor(0.2f, 0.2f, 0.2f, 0f)
         renderingSettingsRepository.setAmbientColor(1f, 1f, 1f)

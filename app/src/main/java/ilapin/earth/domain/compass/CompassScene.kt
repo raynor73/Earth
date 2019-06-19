@@ -31,7 +31,8 @@ class CompassScene(
         Vector3f(1f, 1f, 1f)
     )
 
-    override val camera = PerspectiveCameraComponent()
+    private val camera = PerspectiveCameraComponent()
+    override val cameras: List<CameraComponent> = listOf(camera)
 
     init {
         val cameraGameObject = GameObject()
@@ -52,7 +53,7 @@ class CompassScene(
         arrowGameObject.addComponent(arrowTransform)
         arrowGameObject.addComponent(MaterialComponent("colorWhite", true))
         rootGameObject.addChild(arrowGameObject)
-        meshRenderingRepository.addMeshToRenderList(arrowMesh)
+        meshRenderingRepository.addMeshToRenderList(camera, arrowMesh)
         textureCreationRepository.createTexture("colorWhite", 1, 1, intArrayOf(0xffffffff.toInt()))
 
         renderingSettingsRepository.setClearColor(0.2f, 0.2f, 0.2f, 0f)
