@@ -1,14 +1,19 @@
 package ilapin.earth.ui.camera
 
+import android.Manifest
 import android.content.res.Configuration
 import android.opengl.GLSurfaceView
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.SeekBar
+import com.tbruyelle.rxpermissions2.RxPermissions
 import ilapin.earth.R
+import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.activity_camera.*
 
 class CameraActivity : AppCompatActivity() {
+
+    private val subscriptions = CompositeDisposable()
 
     private var renderer: GLSurfaceViewRenderer? = null
 
@@ -16,22 +21,18 @@ class CameraActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_camera)
 
-        previewSizeSeekBar.max = 100
-        previewSizeSeekBar.progress = 0
-        previewSizeSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+        val permissions = RxPermissions(this)
+        subscriptions.add(permissions.requestEach(Manifest.permission.CAMERA)
+            .subscribe { permission ->
+                if (permission.granted) {
 
-            override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
-                renderer?.putMessage(progress)
-            }
+                } else if (permission.shouldShowRequestPermissionRationale) {
 
-            override fun onStartTrackingTouch(seekBar: SeekBar?) {
-                // do nothing
-            }
+                } else {
 
-            override fun onStopTrackingTouch(seekBar: SeekBar?) {
-                // do nothing
+                }
             }
-        })
+        )
 
         if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
             renderer = GLSurfaceViewRenderer(this)
@@ -45,6 +46,7 @@ class CameraActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
+        subscriptions.clear()
         renderer?.onCleared()
     }
 }
