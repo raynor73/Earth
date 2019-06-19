@@ -1,13 +1,17 @@
 package ilapin.earth.ui.camera
 
-import android.Manifest
+import android.content.Intent
 import android.content.res.Configuration
+import android.net.Uri
 import android.opengl.GLSurfaceView
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.SeekBar
-import com.tbruyelle.rxpermissions2.RxPermissions
+import android.provider.Settings
+import android.support.v7.app.AppCompatActivity
+import android.view.View
 import ilapin.earth.R
+import ilapin.earth.domain.camera.CameraPermission
+import ilapin.earth.domain.camera.CameraPermissionResolver
+import ilapin.earth.frameworkdependent.camera.LocalCameraPermissionRepository
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.activity_camera.*
 
@@ -17,22 +21,40 @@ class CameraActivity : AppCompatActivity() {
 
     private var renderer: GLSurfaceViewRenderer? = null
 
+    private lateinit var cameraPermissionResolver: CameraPermissionResolver
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_camera)
 
-        val permissions = RxPermissions(this)
-        subscriptions.add(permissions.requestEach(Manifest.permission.CAMERA)
-            .subscribe { permission ->
-                if (permission.granted) {
+        cameraPermissionResolver = CameraPermissionResolver(LocalCameraPermissionRepository(this))
 
-                } else if (permission.shouldShowRequestPermissionRationale) {
-
-                } else {
-
+        subscriptions.add(cameraPermissionResolver.permission.subscribe { permission ->
+            when (permission) {
+                CameraPermission.DENIED -> {
+                    if (cameraPermissionResolver.shouldShowRationale()) {
+                        enableCameraButton.visibility = View.VISIBLE
+                        gotoPermissionSettingsLayout.visibility = View.GONE
+                    } else {
+                        enableCameraButton.visibility = View.GONE
+                        gotoPermissionSettingsLayout.visibility = View.VISIBLE
+                    }
+                }
+                else -> {
+                    enableCameraButton.visibility = View.GONE
+                    gotoPermissionSettingsLayout.visibility = View.GONE
                 }
             }
-        )
+        })
+
+        enableCameraButton.setOnClickListener { cameraPermissionResolver.resolve() }
+        gotoPermissionSettingsButton.setOnClickListener {
+            Intent().apply {
+                action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+                data = Uri.fromParts("package", packageName, null)
+                startActivity(this)
+            }
+        }
 
         if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
             renderer = GLSurfaceViewRenderer(this)
@@ -42,11 +64,21 @@ class CameraActivity : AppCompatActivity() {
             glView.renderMode = GLSurfaceView.RENDERMODE_CONTINUOUSLY
             containerLayout.addView(glView, 0)
         }
+
+        cameraPermissionResolver.resolve()
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        cameraPermissionResolver.check()
     }
 
     override fun onDestroy() {
         super.onDestroy()
+
         subscriptions.clear()
         renderer?.onCleared()
+        cameraPermissionResolver.onCleared()
     }
 }
