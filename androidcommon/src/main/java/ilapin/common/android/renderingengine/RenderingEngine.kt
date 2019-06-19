@@ -7,13 +7,13 @@ import android.opengl.GLES20
 import android.opengl.GLUtils
 import ilapin.common.renderingengine.*
 import ilapin.engine3d.MeshComponent
-import ilapin.engine3d.PerspectiveCameraComponent
+import ilapin.engine3d.Scene
 import org.joml.Vector3f
 import org.joml.Vector3fc
 
 class RenderingEngine(
     private val context: Context,
-    private val cameraProvider: () -> PerspectiveCameraComponent?
+    private val sceneProvider: () -> Scene?
 ) : MeshRenderingRepository,
     RenderingSettingsRepository,
     TextureLoadingRepository,
@@ -52,10 +52,7 @@ class RenderingEngine(
 
     override fun addMeshToRenderList(mesh: MeshComponent) {
         val gameObject = mesh.gameObject ?: throw NoParentGameObjectError()
-        val meshRendererComponent =
-            MeshRendererComponent(uniformFillingVisitor) {
-                cameraProvider.invoke()
-            }
+        val meshRendererComponent = MeshRendererComponent(uniformFillingVisitor) { sceneProvider.invoke()?.camera }
         gameObject.addComponent(meshRendererComponent)
         meshRenderers[mesh] = meshRendererComponent
     }
@@ -124,8 +121,8 @@ class RenderingEngine(
         meshRenderers.values.forEach { it.render(ambientShader) }
     }
 
-    fun updateCameraConfig(config: PerspectiveCameraComponent.Config) {
-        cameraProvider.invoke()?.config = config
+    fun onScreenConfigUpdate(width: Int, height: Int) {
+        sceneProvider.invoke()?.onScreenConfigUpdate(width, height)
     }
 
     private fun deleteTextureIfExists(textureName: String) {

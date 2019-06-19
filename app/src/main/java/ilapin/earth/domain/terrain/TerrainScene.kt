@@ -55,6 +55,10 @@ class TerrainScene(
         prevTimestamp = currentTimestamp
     }
 
+    override fun onScreenConfigUpdate(width: Int, height: Int) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
     fun drawColorMap(width: Int, height: Int, colorMap: IntArray) {
         textureCreationRepository.createTexture("noiseTexture", width, height, colorMap)
     }

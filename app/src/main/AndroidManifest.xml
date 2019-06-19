@@ -3,25 +3,22 @@
           xmlns:tools="http://schemas.android.com/tools"
           package="ilapin.earth">
 
-    <uses-feature android:glEsVersion="0x00020000" android:required="true" />
+    <uses-feature
+            android:glEsVersion="0x00020000"
+            android:required="true"/>
 
     <application
+            android:name=".App"
             android:allowBackup="false"
             android:icon="@mipmap/ic_launcher"
             android:label="@string/app_name"
             android:roundIcon="@mipmap/ic_launcher_round"
             android:supportsRtl="true"
             android:theme="@style/AppTheme"
-            tools:ignore="GoogleAppIndexingWarning"
-            android:name=".App">
-        <activity android:name=".ui.terrain.MainActivity" android:screenOrientation="landscape">
-            <!--<intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>-->
-        </activity>
-        <activity android:name=".ui.compass.CompassActivity" android:screenOrientation="portrait">
+            tools:ignore="GoogleAppIndexingWarning">
+        <activity
+                android:name=".ui.camera.CameraActivity"
+                android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
@@ -29,15 +26,39 @@
             </intent-filter>
         </activity>
         <activity
-                android:name=".ui.FullscreenActivity"
-                android:configChanges="orientation|keyboardHidden|screenSize"
-                android:label="@string/app_name"
-                android:theme="@style/FullscreenTheme">
+                android:name=".ui.terrain.MainActivity"
+                android:screenOrientation="landscape">
+
+            <!--
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+            -->
+        </activity>
+        <activity
+                android:name=".ui.compass.CompassActivity"
+                android:screenOrientation="portrait">
             <!--<intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>-->
+        </activity>
+        <activity
+                android:name=".ui.FullscreenActivity"
+                android:configChanges="orientation|keyboardHidden|screenSize"
+                android:label="@string/app_name"
+                android:theme="@style/FullscreenTheme">
+
+            <!--
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+            -->
         </activity>
     </application>
 

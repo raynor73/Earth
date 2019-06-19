@@ -67,6 +67,15 @@ class CompassScene(
 
     override fun update() {}
 
+    override fun onScreenConfigUpdate(width: Int, height: Int) {
+        camera.config = PerspectiveCameraComponent.Config(
+            45f,
+            width.toFloat() / height.toFloat(),
+            0.1f,
+            1000f
+        )
+    }
+
     override fun onCleared() {
         subscription?.dispose()
     }
