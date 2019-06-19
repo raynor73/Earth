@@ -21,7 +21,7 @@ class CameraActivity : AppCompatActivity() {
         previewSizeSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
 
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
-
+                renderer?.putMessage(progress)
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {

@@ -14,6 +14,8 @@ class CameraScene(
     meshRenderingRepository: MeshRenderingRepository
 ) : Scene {
 
+    private val tmpVector = Vector3f()
+
     private val rootGameObject = GameObject()
 
     private val previewCamera = OrthoCameraComponent()
@@ -50,7 +52,21 @@ class CameraScene(
         renderingSettingsRepository.setAmbientColor(1f, 1f, 1f)
     }
 
-    override fun update() {}
+    fun applySizeModifier(modifier: Int) {
+        val clampedModifier = when {
+            modifier > 100 -> 100
+            modifier < 0 -> 0
+            else -> modifier
+        }
+
+        tmpVector.x = 1 + modifier / 100f
+        tmpVector.y = 1 + modifier / 200f
+        previewPlaneTransform.scale = tmpVector
+    }
+
+    override fun update() {
+        // do nothing
+    }
 
     override fun onScreenConfigUpdate(width: Int, height: Int) {
         val halfWidth = width / 2f
@@ -63,5 +79,6 @@ class CameraScene(
     }
 
     override fun onCleared() {
+        // do nothing
     }
 }
