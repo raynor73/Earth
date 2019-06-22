@@ -9,7 +9,6 @@ import android.provider.Settings
 import android.support.v7.app.AppCompatActivity
 import android.view.View
 import ilapin.earth.R
-import ilapin.earth.domain.camera.Camera
 import ilapin.earth.domain.camera.CameraPermission
 import ilapin.earth.domain.camera.CameraPermissionResolver
 import ilapin.earth.domain.camera.CameraRepository
@@ -26,8 +25,6 @@ class CameraActivity : AppCompatActivity() {
 
     private lateinit var cameraPermissionResolver: CameraPermissionResolver
     private lateinit var cameraRepository: CameraRepository
-
-    private var camera: Camera? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

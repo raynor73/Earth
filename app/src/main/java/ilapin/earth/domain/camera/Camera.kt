@@ -4,5 +4,11 @@ interface Camera {
 
     fun getSupportedPreviewSizes(): List<CameraPreviewSize>
 
+    fun setPreviewSize(size: CameraPreviewSize)
+
+    fun startPreview()
+
+    fun stopPreview()
+
     fun release()
 }

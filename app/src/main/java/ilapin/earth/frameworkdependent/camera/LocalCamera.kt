@@ -10,6 +10,18 @@ class LocalCamera(private val camera: AndroidCamera) : Camera {
         return camera.parameters.supportedPreviewSizes.map { CameraPreviewSize(it.width, it.height) }
     }
 
+    override fun setPreviewSize(size: CameraPreviewSize) {
+        camera.parameters = camera.parameters.apply { setPreviewSize(size.width, size.height) }
+    }
+
+    override fun startPreview() {
+        camera.startPreview()
+    }
+
+    override fun stopPreview() {
+        camera.stopPreview()
+    }
+
     override fun release() {
         camera.release()
     }
