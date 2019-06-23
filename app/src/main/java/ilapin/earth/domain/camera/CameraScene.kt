@@ -2,7 +2,7 @@ package ilapin.earth.domain.camera
 
 import ilapin.common.renderingengine.MeshRenderingRepository
 import ilapin.common.renderingengine.RenderingSettingsRepository
-import ilapin.common.renderingengine.TextureCreationRepository
+import ilapin.common.renderingengine.TextureRepository
 import ilapin.engine3d.*
 import org.joml.Quaternionf
 import org.joml.Vector2f
@@ -10,7 +10,7 @@ import org.joml.Vector3f
 
 class CameraScene(
     renderingSettingsRepository: RenderingSettingsRepository,
-    textureCreationRepository: TextureCreationRepository,
+    textureRepository: TextureRepository,
     meshRenderingRepository: MeshRenderingRepository
 ) : Scene {
 
@@ -43,10 +43,10 @@ class CameraScene(
         )
         previewPlaneGameObject.addComponent(previewPlaneMesh)
         previewPlaneGameObject.addComponent(previewPlaneTransform)
-        previewPlaneGameObject.addComponent(MaterialComponent("colorWhite", true))
+        previewPlaneGameObject.addComponent(MaterialComponent("androidCameraPreviewTexture", true))
         rootGameObject.addChild(previewPlaneGameObject)
         meshRenderingRepository.addMeshToRenderList(previewCamera, previewPlaneMesh)
-        textureCreationRepository.createTexture("colorWhite", 1, 1, intArrayOf(0xffffffff.toInt()))
+        //textureRepository.createTexture("colorWhite", 1, 1, intArrayOf(0xffffffff.toInt()))
 
         renderingSettingsRepository.setClearColor(0.2f, 0.2f, 0.2f, 0f)
         renderingSettingsRepository.setAmbientColor(1f, 1f, 1f)

@@ -10,5 +10,5 @@ interface Camera {
 
     fun stopPreview()
 
-    fun release()
+    fun onCleared()
 }

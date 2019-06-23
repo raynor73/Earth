@@ -3,7 +3,7 @@ package ilapin.earth.domain.compass
 import ilapin.common.orientation.OrientationRepository
 import ilapin.common.renderingengine.MeshRenderingRepository
 import ilapin.common.renderingengine.RenderingSettingsRepository
-import ilapin.common.renderingengine.TextureCreationRepository
+import ilapin.common.renderingengine.TextureRepository
 import ilapin.engine3d.*
 import io.reactivex.disposables.Disposable
 import org.joml.Matrix4f
@@ -14,7 +14,7 @@ import org.joml.Vector3f
 class CompassScene(
     renderingSettingsRepository: RenderingSettingsRepository,
     orientationRepository: OrientationRepository,
-    textureCreationRepository: TextureCreationRepository,
+    textureRepository: TextureRepository,
     meshRenderingRepository: MeshRenderingRepository
 ) : Scene {
 
@@ -54,7 +54,7 @@ class CompassScene(
         arrowGameObject.addComponent(MaterialComponent("colorWhite", true))
         rootGameObject.addChild(arrowGameObject)
         meshRenderingRepository.addMeshToRenderList(camera, arrowMesh)
-        textureCreationRepository.createTexture("colorWhite", 1, 1, intArrayOf(0xffffffff.toInt()))
+        textureRepository.createTexture("colorWhite", 1, 1, intArrayOf(0xffffffff.toInt()))
 
         renderingSettingsRepository.setClearColor(0.2f, 0.2f, 0.2f, 0f)
         renderingSettingsRepository.setAmbientColor(1f, 1f, 1f)

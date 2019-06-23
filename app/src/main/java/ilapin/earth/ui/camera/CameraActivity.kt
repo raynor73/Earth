@@ -11,9 +11,7 @@ import android.view.View
 import ilapin.earth.R
 import ilapin.earth.domain.camera.CameraPermission
 import ilapin.earth.domain.camera.CameraPermissionResolver
-import ilapin.earth.domain.camera.CameraRepository
 import ilapin.earth.frameworkdependent.camera.LocalCameraPermissionRepository
-import ilapin.earth.frameworkdependent.camera.LocalCameraRepository
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.activity_camera.*
 
@@ -24,24 +22,24 @@ class CameraActivity : AppCompatActivity() {
     private var renderer: GLSurfaceViewRenderer? = null
 
     private lateinit var cameraPermissionResolver: CameraPermissionResolver
-    private lateinit var cameraRepository: CameraRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_camera)
 
         cameraPermissionResolver = CameraPermissionResolver(LocalCameraPermissionRepository(this))
-        cameraRepository = LocalCameraRepository()
 
         subscriptions.add(cameraPermissionResolver.permission.subscribe { permission ->
             when (permission) {
                 CameraPermission.GRANTED -> {
+                    renderer?.putMessage(GLSurfaceViewRenderer.Message.CAMERA_PERMISSION_GRANTED)
+
                     enableCameraButton.visibility = View.GONE
                     gotoPermissionSettingsLayout.visibility = View.GONE
-
-                    cameraRepository.openCamera()
                 }
                 CameraPermission.DENIED -> {
+                    renderer?.putMessage(GLSurfaceViewRenderer.Message.CAMERA_PERMISSION_DENIED)
+
                     if (cameraPermissionResolver.shouldShowRationale()) {
                         enableCameraButton.visibility = View.VISIBLE
                         gotoPermissionSettingsLayout.visibility = View.GONE
@@ -82,9 +80,15 @@ class CameraActivity : AppCompatActivity() {
         super.onResume()
 
         cameraPermissionResolver.check()
+
+        renderer?.putMessage(GLSurfaceViewRenderer.Message.UI_RESUMED)
     }
 
-    
+    override fun onPause() {
+        super.onPause()
+
+        renderer?.putMessage(GLSurfaceViewRenderer.Message.UI_PAUSED)
+    }
 
     override fun onDestroy() {
         super.onDestroy()

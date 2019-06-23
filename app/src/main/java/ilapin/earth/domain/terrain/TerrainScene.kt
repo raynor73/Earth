@@ -2,7 +2,7 @@ package ilapin.earth.domain.terrain
 
 import ilapin.common.renderingengine.MeshRenderingRepository
 import ilapin.common.renderingengine.RenderingSettingsRepository
-import ilapin.common.renderingengine.TextureCreationRepository
+import ilapin.common.renderingengine.TextureRepository
 import ilapin.common.time.TimeRepository
 import ilapin.engine3d.*
 import org.joml.Quaternionf
@@ -11,7 +11,7 @@ import org.joml.Vector3f
 class TerrainScene(
     private val meshRenderingRepository: MeshRenderingRepository,
     renderingSettingsRepository: RenderingSettingsRepository,
-    private val textureCreationRepository: TextureCreationRepository,
+    private val textureRepository: TextureRepository,
     private val timeRepository: TimeRepository
 ) : Scene {
     private val rootGameObject = GameObject()
@@ -38,7 +38,7 @@ class TerrainScene(
         val quadGameObject = GameObject()
         quadGameObject.addComponent(quadMesh)
         quadGameObject.addComponent(TransformationComponent(Vector3f(), Quaternionf().identity(), Vector3f(1f, 1f, 1f)))
-        textureCreationRepository.createTexture("noiseTexture", 1, 1, intArrayOf(0xffffffff.toInt()))
+        textureRepository.createTexture("noiseTexture", 1, 1, intArrayOf(0xffffffff.toInt()))
         quadGameObject.addComponent(MaterialComponent("noiseTexture"))
         rootGameObject.addChild(quadGameObject)
         meshRenderingRepository.addMeshToRenderList(camera, quadMesh)
@@ -61,7 +61,7 @@ class TerrainScene(
     }
 
     fun drawColorMap(width: Int, height: Int, colorMap: IntArray) {
-        textureCreationRepository.createTexture("noiseTexture", width, height, colorMap)
+        textureRepository.createTexture("noiseTexture", width, height, colorMap)
     }
 
     fun drawNoiseMap(noiseMap: Array<FloatArray>) {
@@ -88,7 +88,7 @@ class TerrainScene(
         val terrainGameObject = GameObject()
         terrainGameObject.addComponent(terrainMesh)
         terrainGameObject.addComponent(TransformationComponent(Vector3f(), Quaternionf().identity(), Vector3f(1f, 1f, 1f)))
-        textureCreationRepository.createTexture("noiseTexture", 1, 1, intArrayOf(0xffffffff.toInt()))
+        textureRepository.createTexture("noiseTexture", 1, 1, intArrayOf(0xffffffff.toInt()))
         terrainGameObject.addComponent(MaterialComponent("noiseTexture"))
         rootGameObject.addChild(terrainGameObject)
 

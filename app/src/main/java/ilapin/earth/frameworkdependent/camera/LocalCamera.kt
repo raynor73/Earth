@@ -1,10 +1,19 @@
 package ilapin.earth.frameworkdependent.camera
 
+import ilapin.common.android.renderingengine.RenderingEngine
 import ilapin.earth.domain.camera.Camera
 import ilapin.earth.domain.camera.CameraPreviewSize
 import android.hardware.Camera as AndroidCamera
 
-class LocalCamera(private val camera: AndroidCamera) : Camera {
+class LocalCamera(
+    private val camera: AndroidCamera,
+    private val previewTextureName: String,
+    private val renderingEngine: RenderingEngine
+) : Camera {
+
+    init {
+        renderingEngine.createCameraPreviewTexture(previewTextureName)
+    }
 
     override fun getSupportedPreviewSizes(): List<CameraPreviewSize> {
         return camera.parameters.supportedPreviewSizes.map { CameraPreviewSize(it.width, it.height) }
@@ -22,7 +31,8 @@ class LocalCamera(private val camera: AndroidCamera) : Camera {
         camera.stopPreview()
     }
 
-    override fun release() {
+    override fun onCleared() {
         camera.release()
+        renderingEngine.deleteTexture(previewTextureName)
     }
 }

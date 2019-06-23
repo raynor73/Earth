@@ -2,10 +2,11 @@ package ilapin.earth.domain.camera
 
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
+import io.reactivex.functions.BiFunction
 import io.reactivex.subjects.PublishSubject
 
 class CameraActivator(
-    private val cameraPermissionResolver: CameraPermissionResolver,
+    isCameraPermissionGrantedObservable: Observable<Boolean>,
     private val cameraRepository: CameraRepository
 ) {
 
@@ -17,10 +18,11 @@ class CameraActivator(
 
     init {
         subscription = Observable.combineLatest(
-            cameraPermissionResolver.permission,
-            isUiActiveSubject
-        ) { permission, isUiActive -> State(permission, isUiActive) }.subscribe { state ->
-            if (state.permission == CameraPermission.GRANTED && state.isUiActive) {
+            isCameraPermissionGrantedObservable,
+            isUiActiveSubject,
+            BiFunction<Boolean, Boolean, State> { isCameraPermissionGranted, isUiActive -> State(isCameraPermissionGranted, isUiActive) }
+        ).subscribe { state ->
+            if (state.isCameraPermissionGranted && state.isUiActive) {
                 val camera = cameraRepository.openCamera()
                 camera.startPreview()
                 this.camera = camera
@@ -45,9 +47,9 @@ class CameraActivator(
 
     private fun releaseCamera() {
         camera?.stopPreview()
-        camera?.release()
+        camera?.onCleared()
         camera = null
     }
 
-    private class State(val permission: CameraPermission, val isUiActive: Boolean)
+    private class State(val isCameraPermissionGranted: Boolean, val isUiActive: Boolean)
 }
