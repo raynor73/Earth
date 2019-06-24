@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.provider.Settings
 import android.support.v7.app.AppCompatActivity
 import android.view.View
+import android.widget.SeekBar
 import ilapin.earth.R
 import ilapin.earth.domain.camera.CameraPermission
 import ilapin.earth.domain.camera.CameraPermissionResolver
@@ -74,6 +75,22 @@ class CameraActivity : AppCompatActivity() {
         }
 
         cameraPermissionResolver.resolve()
+
+        previewSizeSeekBar.max = 100
+        previewSizeSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                renderer?.putMessage(progress)
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {
+                // do nothing
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                // do nothing
+            }
+        })
     }
 
     override fun onResume() {

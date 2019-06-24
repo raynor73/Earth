@@ -59,8 +59,8 @@ class CameraScene(
             else -> modifier
         }
 
-        tmpVector.x = 1 + modifier / 100f
-        tmpVector.y = 1 + modifier / 200f
+        tmpVector.x = 1 + clampedModifier / 10f
+        tmpVector.y = 1 + clampedModifier / 20f
         previewPlaneTransform.scale = tmpVector
     }
 
