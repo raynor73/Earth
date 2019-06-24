@@ -45,6 +45,8 @@ class RenderingEngine(
 
         GLES20.glEnable(GLES20.GL_BLEND)
         GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA)
+
+        createTexture(FALLBACK_TEXTURE_NAME, 1, 1, intArrayOf(0xffff00ff.toInt()))
     }
 
     override fun setClearColor(red: Float, green: Float, blue: Float, alpha: Float) {
@@ -135,6 +137,10 @@ class RenderingEngine(
         GLES20.glDeleteTextures(1, textureIdsToDelete, 0)
     }
 
+    fun getTextureIdOrFallback(textureName: String): Int {
+        return textureIds[textureName] ?: getTextureId(FALLBACK_TEXTURE_NAME)
+    }
+
     fun getTextureId(textureName: String): Int {
         return textureIds[textureName] ?: throw IllegalArgumentException("Unknown texture name: $textureName")
     }
@@ -156,5 +162,10 @@ class RenderingEngine(
             textureIdsToDelete[0] = it
             GLES20.glDeleteTextures(1, textureIdsToDelete, 0)
         }
+    }
+
+    companion object {
+
+        private const val FALLBACK_TEXTURE_NAME = "fallbackTexture"
     }
 }

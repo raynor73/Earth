@@ -13,7 +13,7 @@ class UniformFillingVisitor(private val renderingEngine: RenderingEngine) {
         val currentMaterial = material ?: return
 
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0)
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, renderingEngine.getTextureId(currentMaterial.textureName))
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, renderingEngine.getTextureIdOrFallback(currentMaterial.textureName))
         GLES20.glGetUniformLocation(shader.program, "textureUniform").also { textureHandle ->
             GLES20.glUniform1i(textureHandle, 0)
         }
