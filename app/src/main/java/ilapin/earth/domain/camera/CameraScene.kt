@@ -43,7 +43,7 @@ class CameraScene(
         )
         previewPlaneGameObject.addComponent(previewPlaneMesh)
         previewPlaneGameObject.addComponent(previewPlaneTransform)
-        previewPlaneGameObject.addComponent(MaterialComponent("androidCameraPreviewTexture", true))
+        previewPlaneGameObject.addComponent(MaterialComponent(PREVIEW_TEXTURE_NAME, true))
         rootGameObject.addChild(previewPlaneGameObject)
         meshRenderingRepository.addMeshToRenderList(previewCamera, previewPlaneMesh)
         //textureRepository.createTexture("colorWhite", 1, 1, intArrayOf(0xffffffff.toInt()))
@@ -80,5 +80,10 @@ class CameraScene(
 
     override fun onCleared() {
         // do nothing
+    }
+
+    companion object {
+
+        const val PREVIEW_TEXTURE_NAME = "androidCameraPreviewTexture"
     }
 }

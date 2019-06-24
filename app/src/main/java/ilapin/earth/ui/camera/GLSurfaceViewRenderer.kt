@@ -23,7 +23,7 @@ class GLSurfaceViewRenderer(context: Context) : BaseGLSurfaceRenderer(context) {
 
         cameraActivator = CameraActivator(
             isCameraPermissionGrantedSubject,
-            LocalCameraRepository("androidCameraPreviewTexture", renderingEngine)
+            LocalCameraRepository(CameraScene.PREVIEW_TEXTURE_NAME, renderingEngine)
         )
 
         subscription = messageQueue.messages().subscribe { message ->

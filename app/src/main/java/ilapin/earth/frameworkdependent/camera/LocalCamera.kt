@@ -1,7 +1,9 @@
 package ilapin.earth.frameworkdependent.camera
 
 import android.graphics.SurfaceTexture
+import ilapin.common.android.log.L
 import ilapin.common.android.renderingengine.RenderingEngine
+import ilapin.earth.App.Companion.LOG_TAG
 import ilapin.earth.domain.camera.Camera
 import ilapin.earth.domain.camera.CameraPreviewSize
 import android.hardware.Camera as AndroidCamera
@@ -33,6 +35,7 @@ class LocalCamera(
     }
 
     override fun startPreview() {
+        L.d(LOG_TAG, "startPreview")
         camera.startPreview()
     }
 
@@ -44,6 +47,7 @@ class LocalCamera(
     }
 
     override fun stopPreview() {
+        L.d(LOG_TAG, "stopPreview")
         camera.stopPreview()
     }
 

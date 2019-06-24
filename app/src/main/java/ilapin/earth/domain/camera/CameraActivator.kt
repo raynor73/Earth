@@ -33,7 +33,6 @@ class CameraActivator(
                 camera.startPreview()
                 this._camera = camera
             } else {
-                L.d(LOG_TAG, "Releasing camera")
                 releaseCamera()
             }
         }
@@ -53,8 +52,11 @@ class CameraActivator(
     }
 
     private fun releaseCamera() {
-        _camera?.stopPreview()
-        _camera?.onCleared()
+        _camera?.apply {
+            L.d(LOG_TAG, "Releasing camera")
+            stopPreview()
+            onCleared()
+        }
         _camera = null
     }
 
