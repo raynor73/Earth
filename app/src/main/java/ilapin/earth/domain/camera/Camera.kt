@@ -8,6 +8,8 @@ interface Camera {
 
     fun startPreview()
 
+    fun updatePreviewIfFrameAvailable()
+
     fun stopPreview()
 
     fun onCleared()

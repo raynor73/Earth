@@ -1,5 +1,7 @@
 package ilapin.earth.domain.camera
 
+import ilapin.common.android.log.L
+import ilapin.earth.App.Companion.LOG_TAG
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
 import io.reactivex.functions.BiFunction
@@ -14,7 +16,10 @@ class CameraActivator(
 
     private var subscription: Disposable? = null
 
-    private var camera: Camera? = null
+    private var _camera: Camera? = null
+
+    val camera: Camera?
+        get() = _camera
 
     init {
         subscription = Observable.combineLatest(
@@ -23,10 +28,12 @@ class CameraActivator(
             BiFunction<Boolean, Boolean, State> { isCameraPermissionGranted, isUiActive -> State(isCameraPermissionGranted, isUiActive) }
         ).subscribe { state ->
             if (state.isCameraPermissionGranted && state.isUiActive) {
+                L.d(LOG_TAG, "Opening camera")
                 val camera = cameraRepository.openCamera()
                 camera.startPreview()
-                this.camera = camera
+                this._camera = camera
             } else {
+                L.d(LOG_TAG, "Releasing camera")
                 releaseCamera()
             }
         }
@@ -46,9 +53,9 @@ class CameraActivator(
     }
 
     private fun releaseCamera() {
-        camera?.stopPreview()
-        camera?.onCleared()
-        camera = null
+        _camera?.stopPreview()
+        _camera?.onCleared()
+        _camera = null
     }
 
     private class State(val isCameraPermissionGranted: Boolean, val isUiActive: Boolean)

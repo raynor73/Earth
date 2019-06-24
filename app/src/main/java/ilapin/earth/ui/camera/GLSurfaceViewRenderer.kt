@@ -9,6 +9,7 @@ import ilapin.earth.frameworkdependent.camera.LocalCameraRepository
 import ilapin.engine3d.Scene
 import io.reactivex.disposables.Disposable
 import io.reactivex.subjects.PublishSubject
+import javax.microedition.khronos.opengles.GL10
 
 class GLSurfaceViewRenderer(context: Context) : BaseGLSurfaceRenderer(context) {
 
@@ -36,6 +37,12 @@ class GLSurfaceViewRenderer(context: Context) : BaseGLSurfaceRenderer(context) {
         }
 
         return scene
+    }
+
+    override fun onDrawFrame(gl: GL10) {
+        super.onDrawFrame(gl)
+
+        cameraActivator.camera?.updatePreviewIfFrameAvailable()
     }
 
     override fun onCleared() {
