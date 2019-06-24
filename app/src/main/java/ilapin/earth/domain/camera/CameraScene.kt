@@ -38,7 +38,7 @@ class CameraScene(
         val previewPlaneMesh = MeshComponent(
             listOf(Vector3f(-25f, 25f, 0f), Vector3f(25f, 25f, 0f), Vector3f(25f, -25f, 0f), Vector3f(-25f, -25f, 0f)),
             listOf(Vector3f(0f, 0f, 1f), Vector3f(0f, 0f, 1f), Vector3f(0f, 0f, 1f), Vector3f(0f, 0f, 1f)),
-            listOf(Vector2f(0f, 0f), Vector2f(0f, 1f), Vector2f(1f, 1f), Vector2f(0f, 1f)),
+            listOf(Vector2f(0f, 0f), Vector2f(1f, 0f), Vector2f(1f, 1f), Vector2f(0f, 1f)),
             listOf(0, 1, 2, 2, 3, 0)
         )
         previewPlaneGameObject.addComponent(previewPlaneMesh)
