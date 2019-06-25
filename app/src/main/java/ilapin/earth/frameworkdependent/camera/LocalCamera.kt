@@ -23,6 +23,7 @@ class LocalCamera(
         renderingEngine.createCameraPreviewTexture(previewTextureName)
         surfaceTexture = SurfaceTexture(renderingEngine.getTextureId(previewTextureName))
         camera.setPreviewTexture(surfaceTexture)
+        setPreviewSize(getSupportedPreviewSizes()[0])
         surfaceTexture.setOnFrameAvailableListener { _isFrameAvailable = true }
     }
 
