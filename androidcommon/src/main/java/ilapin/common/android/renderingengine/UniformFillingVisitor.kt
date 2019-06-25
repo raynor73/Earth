@@ -28,6 +28,16 @@ class UniformFillingVisitor(private val renderingEngine: RenderingEngine) {
         }
     }
 
+    fun visitCameraShader(shader: CameraShader) {
+        val currentMaterial = material ?: return
+
+        GLES20.glActiveTexture(GLES20.GL_TEXTURE0)
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, renderingEngine.getTextureIdOrFallback(currentMaterial.textureName))
+        GLES20.glGetUniformLocation(shader.program, "textureUniform").also { textureHandle ->
+            GLES20.glUniform1i(textureHandle, 0)
+        }
+    }
+
     /*fun visitWireframeShader(shader: WireframeShader) {
         val currentMaterial = material ?: return
 

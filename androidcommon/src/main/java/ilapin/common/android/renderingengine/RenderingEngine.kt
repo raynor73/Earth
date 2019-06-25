@@ -32,6 +32,7 @@ class RenderingEngine(
     private val _ambientColor = Vector3f()
 
     private val ambientShader = AmbientShader(context)
+    private val cameraShader = CameraShader(context)
 
     val ambientColor: Vector3fc
         get() = _ambientColor
