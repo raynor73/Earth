@@ -8,6 +8,7 @@ import android.opengl.GLES20
 import android.opengl.GLUtils
 import ilapin.common.renderingengine.*
 import ilapin.engine3d.CameraComponent
+import ilapin.engine3d.MaterialComponent
 import ilapin.engine3d.MeshComponent
 import ilapin.engine3d.Scene
 import org.joml.Vector3f
@@ -19,7 +20,8 @@ class RenderingEngine(
 ) : MeshRenderingRepository,
     RenderingSettingsRepository,
     TextureLoadingRepository,
-    TextureRepository
+    TextureRepository,
+    SpecialTextureRepository
 {
     private val uniformFillingVisitor = UniformFillingVisitor(this)
     private val meshRenderers = HashMap<MeshComponent, MeshRendererComponent>()
@@ -138,6 +140,8 @@ class RenderingEngine(
         GLES20.glDeleteTextures(1, textureIdsToDelete, 0)
     }
 
+    override fun getDeviceCameraTextureName() = "androidCameraPreviewTexture"
+
     fun getTextureIdOrFallback(textureName: String): Int {
         return textureIds[textureName] ?: getTextureId(FALLBACK_TEXTURE_NAME)
     }
@@ -150,7 +154,15 @@ class RenderingEngine(
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT or GLES20.GL_DEPTH_BUFFER_BIT)
 
         sceneProvider.invoke()?.cameras?.forEach { camera ->
-            meshRenderers.values.forEach { it.render(camera, ambientShader) }
+            meshRenderers.values.forEach {
+                val material = it.gameObject?.getComponent(MaterialComponent::class.java) ?: return
+                if (material.textureName == getDeviceCameraTextureName()) {
+                    it.render(camera, cameraShader)
+                } else {
+                    it.render(camera, ambientShader)
+                    //it.render(camera, directionalLightShader)
+                }
+            }
         }
     }
 
