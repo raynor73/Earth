@@ -53,15 +53,17 @@ class CameraScene(
 
     fun onCameraInfoUpdate(cameraInfo: CameraInfo) {
         tmpVector.set(previewPlaneTransform.scale)
-        tmpVector.x = cameraInfo.previewSize.width.toFloat()
-        tmpVector.y = cameraInfo.previewSize.height.toFloat()
+        if (cameraInfo.sensorOrientation == 90 || cameraInfo.sensorOrientation == 270) {
+            tmpVector.x = cameraInfo.previewSize.height.toFloat()
+            tmpVector.y = cameraInfo.previewSize.width.toFloat()
+        } else {
+            tmpVector.x = cameraInfo.previewSize.width.toFloat()
+            tmpVector.y = cameraInfo.previewSize.height.toFloat()
+        }
         previewPlaneTransform.scale = tmpVector
 
-        /*tmpQuaternion.set(previewPlaneTransform.rotation)
-        tmpQuaternion.rotateZ((-Math.toRadians(cameraInfo.sensorOrientation.toDouble())).toFloat())
-        previewPlaneTransform.rotation = tmpQuaternion*/
         tmpQuaternion.set(previewPlaneTransform.rotation)
-        tmpQuaternion.rotateZ(-(Math.PI / 4).toFloat())
+        tmpQuaternion.rotateZ((-Math.toRadians(cameraInfo.sensorOrientation.toDouble())).toFloat())
         previewPlaneTransform.rotation = tmpQuaternion
     }
     
