@@ -14,7 +14,7 @@ abstract class BaseGLSurfaceRenderer(
 
     protected val messageQueue = MessageQueue()
 
-    private var scene: Scene? = null
+    protected var scene: Scene? = null
     protected lateinit var renderingEngine: RenderingEngine
 
     override fun onDrawFrame(gl: GL10) {

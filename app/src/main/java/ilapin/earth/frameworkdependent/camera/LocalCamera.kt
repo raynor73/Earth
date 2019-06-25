@@ -10,6 +10,7 @@ import android.hardware.Camera as AndroidCamera
 
 class LocalCamera(
     private val camera: AndroidCamera,
+    private val cameraSensorOrientation: Int,
     private val previewTextureName: String,
     private val renderingEngine: RenderingEngine
 ) : Camera {
@@ -34,6 +35,12 @@ class LocalCamera(
     override fun setPreviewSize(size: CameraPreviewSize) {
         camera.parameters = camera.parameters.apply { setPreviewSize(size.width, size.height) }
     }
+
+    override fun getPreviewSize(): CameraPreviewSize {
+        return camera.parameters.previewSize.let { CameraPreviewSize(it.width, it.height) }
+    }
+
+    override fun getSensorOrientation() = cameraSensorOrientation
 
     override fun startPreview() {
         L.d(LOG_TAG, "startPreview")

@@ -1,22 +1,22 @@
 package ilapin.earth.ui.camera
 
-import android.content.Context
+import android.support.v7.app.AppCompatActivity
 import ilapin.common.android.renderingengine.BaseGLSurfaceRenderer
 import ilapin.common.messagequeue.MessageQueue
 import ilapin.earth.domain.camera.CameraActivator
 import ilapin.earth.domain.camera.CameraScene
 import ilapin.earth.frameworkdependent.camera.LocalCameraRepository
 import ilapin.engine3d.Scene
-import io.reactivex.disposables.Disposable
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.subjects.PublishSubject
 import javax.microedition.khronos.opengles.GL10
 
-class GLSurfaceViewRenderer(context: Context) : BaseGLSurfaceRenderer(context) {
+class GLSurfaceViewRenderer(activity: AppCompatActivity) : BaseGLSurfaceRenderer(activity) {
 
     private val isCameraPermissionGrantedSubject = PublishSubject.create<Boolean>()
     private lateinit var cameraActivator: CameraActivator
 
-    private var subscription: Disposable? = null
+    private var subscriptions = CompositeDisposable()
 
     override fun createScene(messageQueue: MessageQueue): Scene {
         val scene = CameraScene(renderingEngine, renderingEngine, renderingEngine)
@@ -26,15 +26,18 @@ class GLSurfaceViewRenderer(context: Context) : BaseGLSurfaceRenderer(context) {
             LocalCameraRepository(renderingEngine.getDeviceCameraTextureName(), renderingEngine)
         )
 
-        subscription = messageQueue.messages().subscribe { message ->
+        subscriptions.add(messageQueue.messages().subscribe { message ->
             when (message) {
-                is Int -> scene.applySizeModifier(message)
                 Message.CAMERA_PERMISSION_GRANTED -> isCameraPermissionGrantedSubject.onNext(true)
                 Message.CAMERA_PERMISSION_DENIED -> isCameraPermissionGrantedSubject.onNext(false)
                 Message.UI_RESUMED -> cameraActivator.onResume()
                 Message.UI_PAUSED -> cameraActivator.onPause()
             }
-        }
+        })
+
+        subscriptions.add(cameraActivator.cameraInfo.subscribe { info ->
+            scene.onCameraInfoUpdate(info)
+        })
 
         return scene
     }
@@ -47,7 +50,7 @@ class GLSurfaceViewRenderer(context: Context) : BaseGLSurfaceRenderer(context) {
 
     override fun onCleared() {
         super.onCleared()
-        subscription?.dispose()
+        subscriptions.clear()
         cameraActivator.onCleared()
     }
 

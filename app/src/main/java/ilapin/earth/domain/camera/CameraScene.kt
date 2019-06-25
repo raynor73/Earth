@@ -13,8 +13,8 @@ class CameraScene(
     specialTextureRepository: SpecialTextureRepository,
     meshRenderingRepository: MeshRenderingRepository
 ) : Scene {
-
     private val tmpVector = Vector3f()
+    private val tmpQuaternion = Quaternionf()
 
     private val rootGameObject = GameObject()
 
@@ -36,7 +36,7 @@ class CameraScene(
 
         val previewPlaneGameObject = GameObject()
         val previewPlaneMesh = MeshComponent(
-            listOf(Vector3f(-25f, 25f, 0f), Vector3f(25f, 25f, 0f), Vector3f(25f, -25f, 0f), Vector3f(-25f, -25f, 0f)),
+            listOf(Vector3f(-0.5f, 0.5f, 0f), Vector3f(0.5f, 0.5f, 0f), Vector3f(0.5f, -0.5f, 0f), Vector3f(-0.5f, -0.5f, 0f)),
             listOf(Vector3f(0f, 0f, 1f), Vector3f(0f, 0f, 1f), Vector3f(0f, 0f, 1f), Vector3f(0f, 0f, 1f)),
             listOf(Vector2f(0f, 0f), Vector2f(1f, 0f), Vector2f(1f, 1f), Vector2f(0f, 1f)),
             listOf(0, 1, 2, 2, 3, 0)
@@ -46,24 +46,25 @@ class CameraScene(
         previewPlaneGameObject.addComponent(MaterialComponent(specialTextureRepository.getDeviceCameraTextureName(), true))
         rootGameObject.addChild(previewPlaneGameObject)
         meshRenderingRepository.addMeshToRenderList(previewCamera, previewPlaneMesh)
-        //textureRepository.createTexture("colorWhite", 1, 1, intArrayOf(0xffffffff.toInt()))
 
         renderingSettingsRepository.setClearColor(0.2f, 0.2f, 0.2f, 0f)
         renderingSettingsRepository.setAmbientColor(1f, 1f, 1f)
     }
 
-    fun applySizeModifier(modifier: Int) {
-        val clampedModifier = when {
-            modifier > 100 -> 100
-            modifier < 0 -> 0
-            else -> modifier
-        }
-
-        tmpVector.x = 1 + clampedModifier / 10f
-        tmpVector.y = 1 + clampedModifier / 20f
+    fun onCameraInfoUpdate(cameraInfo: CameraInfo) {
+        tmpVector.set(previewPlaneTransform.scale)
+        tmpVector.x = cameraInfo.previewSize.width.toFloat()
+        tmpVector.y = cameraInfo.previewSize.height.toFloat()
         previewPlaneTransform.scale = tmpVector
-    }
 
+        /*tmpQuaternion.set(previewPlaneTransform.rotation)
+        tmpQuaternion.rotateZ((-Math.toRadians(cameraInfo.sensorOrientation.toDouble())).toFloat())
+        previewPlaneTransform.rotation = tmpQuaternion*/
+        tmpQuaternion.set(previewPlaneTransform.rotation)
+        tmpQuaternion.rotateZ(-(Math.PI / 4).toFloat())
+        previewPlaneTransform.rotation = tmpQuaternion
+    }
+    
     override fun update() {
         // do nothing
     }
