@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory
 import android.opengl.GLES11Ext
 import android.opengl.GLES20
 import android.opengl.GLUtils
+import com.google.common.collect.HashMultimap
 import ilapin.common.renderingengine.*
 import ilapin.engine3d.CameraComponent
 import ilapin.engine3d.MaterialComponent
@@ -25,7 +26,7 @@ class RenderingEngine(
 {
     private val uniformFillingVisitor = UniformFillingVisitor(this)
     private val meshRenderers = HashMap<MeshComponent, MeshRendererComponent>()
-    private val meshRendererCameras = HashMap<CameraComponent, MeshRendererComponent>()
+    private val meshRendererCameras = HashMultimap.create<CameraComponent, MeshRendererComponent>()
 
     private val textureIds = HashMap<String, Int>()
     private val textureIdsToDelete = IntArray(1)
@@ -65,14 +66,12 @@ class RenderingEngine(
         val meshRendererComponent = MeshRendererComponent(uniformFillingVisitor)
         gameObject.addComponent(meshRendererComponent)
         meshRenderers[mesh] = meshRendererComponent
-        meshRendererCameras[camera] = meshRendererComponent
+        meshRendererCameras.put(camera, meshRendererComponent)
     }
 
     override fun removeMeshFromRenderList(camera: CameraComponent, mesh: MeshComponent) {
-        if (meshRenderers.remove(mesh) == null) {
-            throw IllegalArgumentException("Can't find mesh renderer to remove")
-        }
-        if (meshRendererCameras.remove(camera) == null) {
+        val renderer = meshRenderers.remove(mesh) ?: throw IllegalArgumentException("Can't find mesh renderer to remove")
+        if (!meshRendererCameras.remove(camera, renderer)) {
             throw IllegalArgumentException("Can't find mesh renderer's camera to remove")
         }
     }
@@ -151,16 +150,18 @@ class RenderingEngine(
     }
 
     fun render() {
-        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT or GLES20.GL_DEPTH_BUFFER_BIT)
+        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
 
         sceneProvider.invoke()?.cameras?.forEach { camera ->
-            meshRenderers.values.forEach {
+            GLES20.glClear(GLES20.GL_DEPTH_BUFFER_BIT)
+
+            meshRendererCameras[camera].forEach {
                 val material = it.gameObject?.getComponent(MaterialComponent::class.java) ?: return
                 if (material.textureName == getDeviceCameraTextureName()) {
                     it.render(camera, cameraShader)
                 } else {
                     it.render(camera, ambientShader)
-                    //it.render(camera, directionalLightShader)
+                    //For each directional light(multipass): it.render(camera, directionalLightShader)
                 }
             }
         }

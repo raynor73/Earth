@@ -14,4 +14,35 @@
             android:layout_margin="16dp"
             style="@style/SensorInfo" />
 
+    <Button
+            android:id="@+id/enableCameraButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:layout_gravity="bottom|center_horizontal"
+            android:text="@string/enable_camera" />
+
+    <LinearLayout
+            android:id="@+id/gotoPermissionSettingsLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:layout_gravity="bottom|center_horizontal"
+            android:orientation="vertical">
+
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#008080"
+                android:text="@string/camera_rationale_message" />
+
+        <Button
+                android:id="@+id/gotoPermissionSettingsButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="@string/goto_settings" />
+
+    </LinearLayout>
+
 </FrameLayout>

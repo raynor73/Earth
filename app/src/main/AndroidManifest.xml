@@ -22,11 +22,11 @@
         <activity
                 android:name=".ui.camera.CameraActivity"
                 android:screenOrientation="portrait">
-            <intent-filter>
+            <!--<intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
                 <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
+            </intent-filter>-->
         </activity>
         <activity
                 android:name=".ui.terrain.MainActivity"
@@ -43,11 +43,11 @@
         <activity
                 android:name=".ui.compass.CompassActivity"
                 android:screenOrientation="portrait">
-            <!--<intent-filter>
+            <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
                 <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>-->
+            </intent-filter>
         </activity>
         <activity
                 android:name=".ui.FullscreenActivity"

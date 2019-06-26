@@ -19,7 +19,6 @@ class CameraScene(
     private val rootGameObject = GameObject()
 
     private val previewCamera = OrthoCameraComponent()
-    //private val compassCamera = PerspectiveCameraComponent()
 
     private val previewPlaneTransform = TransformationComponent(
         Vector3f(0f, 0f, -1f),
