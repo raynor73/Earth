@@ -1,5 +1,6 @@
 package ilapin.earth.domain.compass
 
+import ilapin.common.meshloader.MeshLoadingRepository
 import ilapin.common.orientation.OrientationRepository
 import ilapin.common.renderingengine.MeshRenderingRepository
 import ilapin.common.renderingengine.RenderingSettingsRepository
@@ -18,7 +19,8 @@ class CompassScene(
     orientationRepository: OrientationRepository,
     private val textureRepository: TextureRepository,
     private val specialTextureRepository: SpecialTextureRepository,
-    private val meshRenderingRepository: MeshRenderingRepository
+    private val meshRenderingRepository: MeshRenderingRepository,
+    private val meshLoadingRepository: MeshLoadingRepository
 ) : Scene {
 
     private val rootGameObject = GameObject()
@@ -68,12 +70,13 @@ class CompassScene(
         rootGameObject.addChild(cameraGameObject)
 
         val arrowGameObject = GameObject()
-        val arrowMesh = MeshComponent(
+        /*val arrowMesh = MeshComponent(
             listOf(Vector3f(0f, 1f, 0f), Vector3f(0.25f, 0f, 0f), Vector3f(-0.25f, 0f, 0f)),
             listOf(Vector3f(0f, 0f, 1f), Vector3f(0f, 0f, 1f), Vector3f(0f, 0f, 1f)),
             listOf(Vector2f(0.5f, 0f), Vector2f(1f, 1f), Vector2f(0f, 1f)),
             listOf(0, 1, 2)
-        )
+        )*/
+        val arrowMesh = meshLoadingRepository.loadMesh("compass_arrow.obj")
         arrowGameObject.addComponent(arrowMesh)
         arrowGameObject.addComponent(arrowTransform)
         arrowGameObject.addComponent(MaterialComponent("colorWhite", true))

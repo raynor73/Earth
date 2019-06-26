@@ -1,6 +1,7 @@
 package ilapin.earth.ui.compass
 
 import android.content.Context
+import ilapin.common.android.meshloader.ObjMeshLoadingRepository
 import ilapin.common.android.renderingengine.BaseGLSurfaceRenderer
 import ilapin.common.messagequeue.MessageQueue
 import ilapin.common.orientation.OrientationFromMessageQueueRepository
@@ -12,7 +13,7 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.subjects.PublishSubject
 import javax.microedition.khronos.opengles.GL10
 
-class GLSurfaceViewRenderer(context: Context) : BaseGLSurfaceRenderer(context) {
+class GLSurfaceViewRenderer(private val context: Context) : BaseGLSurfaceRenderer(context) {
 
     private val isCameraPermissionGrantedSubject = PublishSubject.create<Boolean>()
     private lateinit var cameraActivator: CameraActivator
@@ -25,7 +26,8 @@ class GLSurfaceViewRenderer(context: Context) : BaseGLSurfaceRenderer(context) {
             OrientationFromMessageQueueRepository(messageQueue),
             renderingEngine,
             renderingEngine,
-            renderingEngine
+            renderingEngine,
+            ObjMeshLoadingRepository(context)
         )
 
         cameraActivator = CameraActivator(
