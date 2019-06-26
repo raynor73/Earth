@@ -93,7 +93,7 @@ class CompassScene(
         }
         previewPlaneTransform.scale = tmpVector
 
-        tmpQuaternion.set(previewPlaneTransform.rotation)
+        tmpQuaternion.identity()
         tmpQuaternion.rotateZ((-Math.toRadians(cameraInfo.sensorOrientation.toDouble())).toFloat())
         previewPlaneTransform.rotation = tmpQuaternion
     }
