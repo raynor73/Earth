@@ -34,7 +34,7 @@ class CompassScene(
     private val arrowTransform = TransformationComponent(
         Vector3f(0f, -0.5f, -3f),
         Quaternionf().identity(),
-        Vector3f(1f, 1f, 1f)
+        Vector3f(0.3f, 0.3f, 0.3f)
     )
     private val previewPlaneTransform = TransformationComponent(
         Vector3f(0f, 0f, -1f),
