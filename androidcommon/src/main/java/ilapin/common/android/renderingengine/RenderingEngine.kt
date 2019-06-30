@@ -8,10 +8,7 @@ import android.opengl.GLES20
 import android.opengl.GLUtils
 import com.google.common.collect.HashMultimap
 import ilapin.common.renderingengine.*
-import ilapin.engine3d.CameraComponent
-import ilapin.engine3d.MaterialComponent
-import ilapin.engine3d.MeshComponent
-import ilapin.engine3d.Scene
+import ilapin.engine3d.*
 import org.joml.Vector3f
 import org.joml.Vector3fc
 
@@ -19,14 +16,16 @@ class RenderingEngine(
     private val context: Context,
     private val sceneProvider: () -> Scene?
 ) : MeshRenderingRepository,
+    LightsRenderingRepository,
     RenderingSettingsRepository,
     TextureLoadingRepository,
     TextureRepository,
     SpecialTextureRepository
 {
     private val uniformFillingVisitor = UniformFillingVisitor(this)
-    private val meshRenderers = HashMap<MeshComponent, MeshRendererComponent>()
-    private val meshRendererCameras = HashMultimap.create<CameraComponent, MeshRendererComponent>()
+    private val meshToMeshRenderer = HashMap<MeshComponent, MeshRendererComponent>()
+    private val cameraToMeshRenderers = HashMultimap.create<CameraComponent, MeshRendererComponent>()
+    private val cameraToDirectionalLights = HashMultimap.create<CameraComponent, DirectionalLightComponent>()
 
     private val textureIds = HashMap<String, Int>()
     private val textureIdsToDelete = IntArray(1)
@@ -35,6 +34,7 @@ class RenderingEngine(
     private val _ambientColor = Vector3f()
 
     private val ambientShader = AmbientShader(context)
+    private val directionalLightShader = DirectionalLightShader(context)
     private val cameraShader = CameraShader(context)
 
     val ambientColor: Vector3fc
@@ -65,14 +65,24 @@ class RenderingEngine(
         val gameObject = mesh.gameObject ?: throw NoParentGameObjectError()
         val meshRendererComponent = MeshRendererComponent(uniformFillingVisitor)
         gameObject.addComponent(meshRendererComponent)
-        meshRenderers[mesh] = meshRendererComponent
-        meshRendererCameras.put(camera, meshRendererComponent)
+        meshToMeshRenderer[mesh] = meshRendererComponent
+        cameraToMeshRenderers.put(camera, meshRendererComponent)
     }
 
     override fun removeMeshFromRenderList(camera: CameraComponent, mesh: MeshComponent) {
-        val renderer = meshRenderers.remove(mesh) ?: throw IllegalArgumentException("Can't find mesh renderer to remove")
-        if (!meshRendererCameras.remove(camera, renderer)) {
+        val renderer = meshToMeshRenderer.remove(mesh) ?: throw IllegalArgumentException("Can't find mesh renderer to remove")
+        if (!cameraToMeshRenderers.remove(camera, renderer)) {
             throw IllegalArgumentException("Can't find mesh renderer's camera to remove")
+        }
+    }
+
+    override fun addDirectionalLight(camera: CameraComponent, light: DirectionalLightComponent) {
+        cameraToDirectionalLights.put(camera, light)
+    }
+
+    override fun removeDirectionalLight(camera: CameraComponent, light: DirectionalLightComponent) {
+        if (!cameraToDirectionalLights.remove(camera, light)) {
+            throw IllegalArgumentException("Can't find directional light's camera to remove")
         }
     }
 
@@ -107,8 +117,6 @@ class RenderingEngine(
         val bitmap = Bitmap.createBitmap(data, width, height, Bitmap.Config.ARGB_8888)
 
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureIdsOut[0])
-        /*GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR_MIPMAP_LINEAR)
-        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR)*/
         GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST)
         GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST)
         GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE)
@@ -155,15 +163,29 @@ class RenderingEngine(
         sceneProvider.invoke()?.cameras?.forEach { camera ->
             GLES20.glClear(GLES20.GL_DEPTH_BUFFER_BIT)
 
-            meshRendererCameras[camera].forEach {
+            cameraToMeshRenderers[camera].forEach {
                 val material = it.gameObject?.getComponent(MaterialComponent::class.java) ?: return
                 if (material.textureName == getDeviceCameraTextureName()) {
-                    it.render(camera, cameraShader)
+                    it.render(camera, cameraShader, null)
                 } else {
-                    it.render(camera, ambientShader)
-                    //For each directional light(multipass): it.render(camera, directionalLightShader)
+                    it.render(camera, ambientShader, null)
                 }
             }
+
+            GLES20.glEnable(GLES20.GL_BLEND)
+            GLES20.glDepthMask(false)
+            GLES20.glDepthFunc(GLES20.GL_EQUAL)
+            GLES20.glBlendFunc(GLES20.GL_ONE, GLES20.GL_ONE)
+
+            cameraToDirectionalLights[camera].forEach { light ->
+                cameraToMeshRenderers[camera].forEach { meshRenderer ->
+                    meshRenderer.render(camera, directionalLightShader, light)
+                }
+            }
+
+            GLES20.glDepthMask(true)
+            GLES20.glDepthFunc(GLES20.GL_LESS)
+            GLES20.glDisable(GLES20.GL_BLEND)
         }
     }
 

@@ -26,7 +26,7 @@ class MeshRendererComponent(private val uniformFillingVisitor: UniformFillingVis
     private val bufferMatrix = Matrix4f()
     private val bufferFloatArray = FloatArray(16)
 
-    fun render(camera: CameraComponent, shader: Shader) {
+    fun render(camera: CameraComponent, shader: Shader, light: GameObjectComponent?) {
         val material = gameObject?.getComponent(MaterialComponent::class.java) ?: return
         val transformation = gameObject?.getComponent(TransformationComponent::class.java) ?: return
         val viewProjectionMatrix = camera.getViewProjectionMatrix() ?: return
@@ -134,6 +134,7 @@ class MeshRendererComponent(private val uniformFillingVisitor: UniformFillingVis
         )
 
         uniformFillingVisitor.material = material
+        uniformFillingVisitor.light = light
         shader.accept(uniformFillingVisitor)
 
         GLES20.glGetUniformLocation(shader.program, "mvpMatrixUniform").also { mvpMatrixHandle ->

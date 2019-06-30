@@ -2,10 +2,7 @@ package ilapin.earth.domain.compass
 
 import ilapin.common.meshloader.MeshLoadingRepository
 import ilapin.common.orientation.OrientationRepository
-import ilapin.common.renderingengine.MeshRenderingRepository
-import ilapin.common.renderingengine.RenderingSettingsRepository
-import ilapin.common.renderingengine.SpecialTextureRepository
-import ilapin.common.renderingengine.TextureRepository
+import ilapin.common.renderingengine.*
 import ilapin.earth.domain.camera.CameraInfo
 import ilapin.engine3d.*
 import io.reactivex.disposables.Disposable
@@ -20,6 +17,7 @@ class CompassScene(
     private val textureRepository: TextureRepository,
     private val specialTextureRepository: SpecialTextureRepository,
     private val meshRenderingRepository: MeshRenderingRepository,
+    private val lightsRenderingRepository: LightsRenderingRepository,
     private val meshLoadingRepository: MeshLoadingRepository
 ) : Scene {
 
@@ -48,11 +46,17 @@ class CompassScene(
     override val cameras: List<CameraComponent> = listOf(previewCamera, camera)
 
     init {
+        setupOrthoCamera()
+        setupPerspectiveCamera()
+
+        initTextures()
+
         initCompassArrow()
         initPreviewPlane()
+        initLights()
 
-        renderingSettingsRepository.setClearColor(0.2f, 0.2f, 0.2f, 0f)
-        renderingSettingsRepository.setAmbientColor(1f, 1f, 1f)
+        renderingSettingsRepository.setClearColor(0f, 0f, 0f, 0f)
+        renderingSettingsRepository.setAmbientColor(0.3f, 0.3f, 0.3f)
 
         subscription = orientationRepository.orientation().subscribe { orientation ->
             tmpMatrix.set(orientation.rotationMatrix).invert()
@@ -61,28 +65,57 @@ class CompassScene(
         }
     }
 
-    private fun initCompassArrow() {
+    fun setupOrthoCamera() {
+        val previewCameraGameObject = GameObject()
+        previewCameraGameObject.addComponent(previewCamera)
+        rootGameObject.addChild(previewCameraGameObject)
+    }
+
+    fun setupPerspectiveCamera() {
         val cameraGameObject = GameObject()
         cameraGameObject.addComponent(
             TransformationComponent(Vector3f(), Quaternionf().identity(), Vector3f(1f, 1f, 1f))
         )
         cameraGameObject.addComponent(camera)
         rootGameObject.addChild(cameraGameObject)
+    }
 
+    private fun initTextures() {
+        textureRepository.createTexture("colorWhite", 1, 1, intArrayOf(0xffffffff.toInt()))
+    }
+
+    private fun initLights() {
+        val light1GameObject = GameObject()
+        light1GameObject.addComponent(TransformationComponent(
+            Vector3f(),
+            Quaternionf().identity().rotateZ((-Math.PI / 2).toFloat()),
+            Vector3f(1f, 1f, 1f)
+        ))
+        val light1Component = DirectionalLightComponent(Vector3f(1f, 1f, 1f))
+        light1GameObject.addComponent(light1Component)
+        rootGameObject.addChild(light1GameObject)
+        lightsRenderingRepository.addDirectionalLight(camera, light1Component)
+
+        val light2GameObject = GameObject()
+        light2GameObject.addComponent(TransformationComponent(
+            Vector3f(),
+            Quaternionf().identity().rotateZ((Math.PI / 2).toFloat()),
+            Vector3f(1f, 1f, 1f)
+        ))
+        val light2Component = DirectionalLightComponent(Vector3f(0.8f, 0.8f, 0.8f))
+        light2GameObject.addComponent(light2Component)
+        rootGameObject.addChild(light2GameObject)
+        lightsRenderingRepository.addDirectionalLight(camera, light2Component)
+    }
+
+    private fun initCompassArrow() {
         val arrowGameObject = GameObject()
-        /*val arrowMesh = MeshComponent(
-            listOf(Vector3f(0f, 1f, 0f), Vector3f(0.25f, 0f, 0f), Vector3f(-0.25f, 0f, 0f)),
-            listOf(Vector3f(0f, 0f, 1f), Vector3f(0f, 0f, 1f), Vector3f(0f, 0f, 1f)),
-            listOf(Vector2f(0.5f, 0f), Vector2f(1f, 1f), Vector2f(0f, 1f)),
-            listOf(0, 1, 2)
-        )*/
         val arrowMesh = meshLoadingRepository.loadMesh("compass_arrow.obj")
         arrowGameObject.addComponent(arrowMesh)
         arrowGameObject.addComponent(arrowTransform)
         arrowGameObject.addComponent(MaterialComponent("colorWhite", true))
         rootGameObject.addChild(arrowGameObject)
         meshRenderingRepository.addMeshToRenderList(camera, arrowMesh)
-        textureRepository.createTexture("colorWhite", 1, 1, intArrayOf(0xffffffff.toInt()))
     }
 
     fun onCameraInfoUpdate(cameraInfo: CameraInfo) {
@@ -113,10 +146,6 @@ class CompassScene(
     }
 
     private fun initPreviewPlane() {
-        val previewCameraGameObject = GameObject()
-        previewCameraGameObject.addComponent(previewCamera)
-        rootGameObject.addChild(previewCameraGameObject)
-
         val previewPlaneGameObject = GameObject()
         val previewPlaneMesh = MeshComponent(
             listOf(Vector3f(-0.5f, 0.5f, 0f), Vector3f(0.5f, 0.5f, 0f), Vector3f(0.5f, -0.5f, 0f), Vector3f(-0.5f, -0.5f, 0f)),
