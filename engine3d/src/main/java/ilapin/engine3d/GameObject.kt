@@ -5,19 +5,22 @@ class GameObject {
     var isEnabled = true
 
     private var _parent: GameObject? = null
-    private val children = HashSet<GameObject>()
+    private val _children = HashSet<GameObject>()
     private val components = HashSet<GameObjectComponent>()
 
     val parent: GameObject?
         get() = _parent
 
+    val children: Set<GameObject>
+        get() = _children
+
     fun addChild(child: GameObject) {
-        children += child
+        _children += child
         child._parent = this
     }
 
     fun removeChild(child: GameObject) {
-        children -= child
+        _children -= child
         child._parent = null
     }
 
@@ -33,7 +36,7 @@ class GameObject {
 
     fun update() {
         if (isEnabled) {
-            children.forEach { it.update() }
+            _children.forEach { it.update() }
         }
     }
 

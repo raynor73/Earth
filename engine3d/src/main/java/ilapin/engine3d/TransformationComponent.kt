@@ -11,7 +11,7 @@ class TransformationComponent(
     scale: Vector3fc
 ) : GameObjectComponent() {
 
-    private var isDirty = false
+    private var isDirty = true
 
     private val _position = Vector3f()
     private val _rotation = Quaternionf()
@@ -35,7 +35,7 @@ class TransformationComponent(
             return _position
         }
         set(value) {
-            isDirty = true
+            setDirty()
             _position.set(value)
         }
 
@@ -51,7 +51,7 @@ class TransformationComponent(
             return _rotation
         }
         set(value) {
-            isDirty = true
+            setDirty()
             _rotation.set(value)
         }
 
@@ -67,9 +67,20 @@ class TransformationComponent(
             return _scale
         }
         set(value) {
-            isDirty = true
+            setDirty()
             _scale.set(value)
         }
+
+    fun setDirty() {
+        if (!isDirty) {
+            gameObject?.children?.forEach {
+                val childTransformation = it.getComponent(TransformationComponent::class.java)
+                    ?: throw IllegalArgumentException("No child transformation found")
+                childTransformation.setDirty()
+            }
+        }
+        isDirty = true
+    }
 
     private fun calculateFinalTransformation(parentTransformation: TransformationComponent) {
         _rotation.mul(parentTransformation.rotation)
