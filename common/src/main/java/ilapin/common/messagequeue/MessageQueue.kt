@@ -18,9 +18,10 @@ class MessageQueue {
 
     fun putMessageAndWaitForExecution(message: Any) {
         blockingQueue.put(message)
-        while (blockingQueue.size > 0) {
+        /*while (blockingQueue.size > 0) {
             // do nothing
-        }
+        }*/
+        update()
     }
 
     fun update() {
