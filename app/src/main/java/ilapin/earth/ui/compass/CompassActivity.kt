@@ -95,14 +95,6 @@ class CompassActivity : AppCompatActivity() {
             containerLayout.addView(glView, 0)
         }
 
-        val notAvailableString = getString(R.string.n_a)
-        magneticFieldView.text = getString(
-            R.string.magnetic_field_values,
-            notAvailableString,
-            notAvailableString,
-            notAvailableString
-        )
-
         cameraPermissionResolver.resolve()
     }
 
@@ -117,15 +109,17 @@ class CompassActivity : AppCompatActivity() {
                     View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
                     View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
 
-        pausableSubscriptions.add(magneticFieldRepository.magneticField().subscribe { magneticField ->
-            magneticFieldView.text = getString(
-                R.string.magnetic_field_values,
-                magneticField.x.toString(),
-                magneticField.y.toString(),
-                magneticField.z.toString()
-            )
-        })
         pausableSubscriptions.add(orientationRepository.orientation().subscribe { orientation ->
+            val azimuthDegrees = Math.toDegrees(orientation.azimuth.toDouble())
+            val azimuthDegreesPositiveOnly = if (azimuthDegrees >= 0) {
+                azimuthDegrees
+            } else {
+                azimuthDegrees + 360
+            }
+            azimuthView.text = getString(
+                R.string.azimuth_degrees,
+                String.format("%03d", azimuthDegreesPositiveOnly.toInt())
+            )
             renderer?.putMessage(orientation)
         })
 

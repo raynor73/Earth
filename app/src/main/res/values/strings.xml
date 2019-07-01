@@ -26,11 +26,10 @@
         <item>Цвета</item>
     </string-array>
 
-    <string name="magnetic_field_values">Magnetic field\nx: %1$s μT\ny: %2$s μT\nz: %3$s μT</string>
-    <string name="n_a">N/A</string>
-    <string name="enable_camera">Включить камеру</string>
-    <string name="camera_rationale_message">Необходим доступ к камере, чтобы работать в режиме дополненной реальности
-    </string>
-    <string name="goto_settings">Перейти в настройки доступа</string>
+    <string name="azimuth_degrees">%1$s°</string>
+
+    <string name="enable_camera">Включить дополненную реальность</string>
+    <string name="camera_rationale_message">Необходим доступ к камере, чтобы работать в режиме дополненной реальности.</string>
+    <string name="goto_settings">Включить камеру в системных настройках</string>
 
 </resources>
