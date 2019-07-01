@@ -6,6 +6,7 @@ import ilapin.common.android.renderingengine.RenderingEngine
 import ilapin.earth.App.Companion.LOG_TAG
 import ilapin.earth.domain.camera.Camera
 import ilapin.earth.domain.camera.CameraPreviewSize
+import java.util.concurrent.atomic.AtomicInteger
 import android.hardware.Camera as AndroidCamera
 
 class LocalCamera(
@@ -17,15 +18,14 @@ class LocalCamera(
 
     private val surfaceTexture: SurfaceTexture
 
-    @Volatile
-    private var _isFrameAvailable: Boolean = false
+    private val numberOfFramesAvailable = AtomicInteger(0)
 
     init {
         renderingEngine.createCameraPreviewTexture(previewTextureName)
         surfaceTexture = SurfaceTexture(renderingEngine.getTextureId(previewTextureName))
         camera.setPreviewTexture(surfaceTexture)
         setPreviewSize(getSupportedPreviewSizes()[0])
-        surfaceTexture.setOnFrameAvailableListener { _isFrameAvailable = true }
+        surfaceTexture.setOnFrameAvailableListener { numberOfFramesAvailable.incrementAndGet() }
     }
 
     override fun getSupportedPreviewSizes(): List<CameraPreviewSize> {
@@ -48,9 +48,9 @@ class LocalCamera(
     }
 
     override fun updatePreviewIfFrameAvailable() {
-        if (_isFrameAvailable) {
+        while (numberOfFramesAvailable.get() > 0) {
             surfaceTexture.updateTexImage()
-            _isFrameAvailable = false
+            numberOfFramesAvailable.decrementAndGet()
         }
     }
 
