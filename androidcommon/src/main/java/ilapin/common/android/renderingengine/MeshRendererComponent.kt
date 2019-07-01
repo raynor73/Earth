@@ -148,7 +148,6 @@ class MeshRendererComponent(private val uniformFillingVisitor: UniformFillingVis
 
         GLES20.glGetUniformLocation(shader.program, "modelMatrixUniform").also { handle ->
             bufferMatrix.identity()
-            //bufferMatrix.translate(transformation.getPosition())
             bufferMatrix.scale(transformation.scale)
             bufferMatrix.rotate(transformation.rotation)
             bufferMatrix.get(bufferFloatArray)

@@ -17,6 +17,10 @@ class TransformationComponent(
     private val _rotation = Quaternionf()
     private val _scale = Vector3f()
 
+    private val finalPosition = Vector3f()
+    private val finalRotation = Quaternionf()
+    private val finalScale = Vector3f()
+
     init {
         _position.set(position)
         _rotation.set(rotation)
@@ -25,14 +29,8 @@ class TransformationComponent(
 
     var position: Vector3fc
         get() {
-            if (isDirty) {
-                gameObject?.parent?.let { parent ->
-                    val parentTransformation = parent.getComponent(TransformationComponent::class.java) ?: throw IllegalArgumentException("No parent transformation found")
-                    calculateFinalTransformation(parentTransformation)
-                }
-                isDirty = false
-            }
-            return _position
+            calculateFinalTransformation()
+            return finalPosition
         }
         set(value) {
             setDirty()
@@ -41,14 +39,8 @@ class TransformationComponent(
 
     var rotation: Quaternionfc
         get() {
-            if (isDirty) {
-                gameObject?.parent?.let { parent ->
-                    val parentTransformation = parent.getComponent(TransformationComponent::class.java) ?: throw IllegalArgumentException("No parent transformation found")
-                    calculateFinalTransformation(parentTransformation)
-                }
-                isDirty = false
-            }
-            return _rotation
+            calculateFinalTransformation()
+            return finalRotation
         }
         set(value) {
             setDirty()
@@ -57,14 +49,8 @@ class TransformationComponent(
 
     var scale: Vector3fc
         get() {
-            if (isDirty) {
-                gameObject?.parent?.let { parent ->
-                    val parentTransformation = parent.getComponent(TransformationComponent::class.java) ?: throw IllegalArgumentException("No parent transformation found")
-                    calculateFinalTransformation(parentTransformation)
-                }
-                isDirty = false
-            }
-            return _scale
+            calculateFinalTransformation()
+            return finalScale
         }
         set(value) {
             setDirty()
@@ -72,20 +58,33 @@ class TransformationComponent(
         }
 
     fun setDirty() {
-        if (!isDirty) {
-            gameObject?.children?.forEach {
-                val childTransformation = it.getComponent(TransformationComponent::class.java)
-                    ?: throw IllegalArgumentException("No child transformation found")
-                childTransformation.setDirty()
-            }
+        gameObject?.children?.forEach {
+            val childTransformation = it.getComponent(TransformationComponent::class.java)
+                ?: throw IllegalArgumentException("No child transformation found")
+            childTransformation.setDirty()
         }
         isDirty = true
     }
 
-    private fun calculateFinalTransformation(parentTransformation: TransformationComponent) {
-        _rotation.mul(parentTransformation.rotation)
-        _scale.mul(parentTransformation.scale)
-        _position.rotate(parentTransformation.rotation)
-        _position.add(parentTransformation.position)
+    private fun calculateFinalTransformation() {
+        if (isDirty) {
+            val parent = gameObject?.parent
+            if (parent != null) {
+                val parentTransformation = parent.getComponent(TransformationComponent::class.java)
+                    ?: throw IllegalArgumentException("No parent transformation found")
+
+                _rotation.mul(parentTransformation.rotation, finalRotation)
+
+                _scale.mul(parentTransformation.scale, finalScale)
+
+                _position.rotate(parentTransformation.rotation, finalPosition)
+                finalPosition.add(parentTransformation.position)
+            } else {
+                finalPosition.set(_position)
+                finalRotation.set(_rotation)
+                finalScale.set(_scale)
+            }
+            isDirty = false
+        }
     }
 }
