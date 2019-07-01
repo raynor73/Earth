@@ -10,20 +10,18 @@ import android.os.Bundle
 import android.provider.Settings
 import android.support.v7.app.AppCompatActivity
 import android.view.View
-import ilapin.earth.R
 import ilapin.common.acceleration.AccelerationRepository
-import ilapin.common.magneticfield.MagneticFieldRepository
-import ilapin.common.orientation.OrientationRepository
 import ilapin.common.android.acceleration.SensorAccelerationRepository
 import ilapin.common.android.magneticfield.SensorMagneticFieldRepository
 import ilapin.common.android.orientation.SoftwareOrientationRepository
+import ilapin.common.magneticfield.MagneticFieldRepository
+import ilapin.common.orientation.OrientationRepository
+import ilapin.earth.R
 import ilapin.earth.domain.camera.CameraPermission
 import ilapin.earth.domain.camera.CameraPermissionResolver
 import ilapin.earth.frameworkdependent.camera.LocalCameraPermissionRepository
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.activity_compass.*
-import kotlinx.android.synthetic.main.activity_compass.enableCameraButton
-import kotlinx.android.synthetic.main.activity_compass.gotoPermissionSettingsLayout
 import kotlinx.android.synthetic.main.activity_main.containerLayout
 
 class CompassActivity : AppCompatActivity() {
@@ -42,6 +40,14 @@ class CompassActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_compass)
+
+        containerLayout.systemUiVisibility =
+            View.SYSTEM_UI_FLAG_LOW_PROFILE or
+            View.SYSTEM_UI_FLAG_FULLSCREEN or
+            View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
+            View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or
+            View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
+            View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
 
         cameraPermissionResolver = CameraPermissionResolver(LocalCameraPermissionRepository(this))
 

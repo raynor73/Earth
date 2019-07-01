@@ -42,7 +42,8 @@
         </activity>
         <activity
                 android:name=".ui.compass.CompassActivity"
-                android:screenOrientation="portrait">
+                android:screenOrientation="portrait"
+                android:theme="@style/NoAppBarTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
