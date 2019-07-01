@@ -133,7 +133,7 @@ class CompassActivity : AppCompatActivity() {
 
         pausableSubscriptions.clear()
 
-        renderer?.putMessage(GLSurfaceViewRenderer.Message.UI_PAUSED)
+        renderer?.putMessageAndWaitForExecution(GLSurfaceViewRenderer.Message.UI_PAUSED)
     }
 
     override fun onDestroy() {

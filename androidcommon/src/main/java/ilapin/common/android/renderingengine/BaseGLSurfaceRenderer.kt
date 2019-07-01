@@ -41,6 +41,10 @@ abstract class BaseGLSurfaceRenderer(
         messageQueue.putMessage(message)
     }
 
+    fun putMessageAndWaitForExecution(message: Any) {
+        messageQueue.putMessageAndWaitForExecution(message)
+    }
+
     open fun onCleared() {
         scene?.onCleared()
     }
