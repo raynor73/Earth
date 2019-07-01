@@ -83,8 +83,8 @@ class CompassScene(
     }
 
     private fun initTextures() {
-        textureRepository.createTexture("colorRedSouth", 1, 1, intArrayOf(0xffcd0e3a.toInt()))
-        textureRepository.createTexture("colorBlueNorth", 1, 1, intArrayOf(0xff00a0b0.toInt()))
+        textureRepository.createTexture("colorArrowRed", 1, 1, intArrayOf(0xffcd0e3a.toInt()))
+        textureRepository.createTexture("colorArrowBlue", 1, 1, intArrayOf(0xff00a0b0.toInt()))
     }
 
     private fun initLights() {
@@ -121,7 +121,7 @@ class CompassScene(
         northPointerGameObject.addComponent(
             TransformationComponent(Vector3f(), Quaternionf().identity(), Vector3f(1f, 1f, 1f))
         )
-        northPointerGameObject.addComponent(MaterialComponent("colorBlueNorth"))
+        northPointerGameObject.addComponent(MaterialComponent("colorArrowRed"))
         meshRenderingRepository.addMeshToRenderList(camera, northPointerMesh)
         arrowGameObject.addChild(northPointerGameObject)
 
@@ -131,7 +131,7 @@ class CompassScene(
         southPointerGameObject.addComponent(
             TransformationComponent(Vector3f(), Quaternionf().identity(), Vector3f(1f, 1f, 1f))
         )
-        southPointerGameObject.addComponent(MaterialComponent("colorRedSouth"))
+        southPointerGameObject.addComponent(MaterialComponent("colorArrowBlue"))
         meshRenderingRepository.addMeshToRenderList(camera, southPointerMesh)
         arrowGameObject.addChild(southPointerGameObject)
 
