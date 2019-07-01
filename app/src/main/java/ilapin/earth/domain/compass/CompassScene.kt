@@ -21,7 +21,9 @@ class CompassScene(
     private val meshLoadingRepository: MeshLoadingRepository
 ) : Scene {
 
-    private val rootGameObject = GameObject()
+    private val rootGameObject = GameObject().apply {
+        addComponent(TransformationComponent(Vector3f(), Quaternionf().identity(), Vector3f(1f, 1f, 1f)))
+    }
 
     private var subscription: Disposable? = null
 

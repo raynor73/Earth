@@ -4,18 +4,21 @@ class GameObject {
 
     var isEnabled = true
 
-    private var parent: GameObject? = null
+    private var _parent: GameObject? = null
     private val children = HashSet<GameObject>()
     private val components = HashSet<GameObjectComponent>()
 
+    val parent: GameObject?
+        get() = _parent
+
     fun addChild(child: GameObject) {
         children += child
-        child.parent = this
+        child._parent = this
     }
 
     fun removeChild(child: GameObject) {
         children -= child
-        child.parent = null
+        child._parent = null
     }
 
     fun addComponent(component: GameObjectComponent) {
