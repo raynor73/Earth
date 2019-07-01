@@ -83,7 +83,8 @@ class CompassScene(
     }
 
     private fun initTextures() {
-        textureRepository.createTexture("colorWhite", 1, 1, intArrayOf(0xffffffff.toInt()))
+        textureRepository.createTexture("colorRedSouth", 1, 1, intArrayOf(0xffcd0e3a.toInt()))
+        textureRepository.createTexture("colorBlueNorth", 1, 1, intArrayOf(0xff00a0b0.toInt()))
     }
 
     private fun initLights() {
@@ -112,12 +113,29 @@ class CompassScene(
 
     private fun initCompassArrow() {
         val arrowGameObject = GameObject()
-        val arrowMesh = meshLoadingRepository.loadMesh("compass_arrow.obj")
-        arrowGameObject.addComponent(arrowMesh)
         arrowGameObject.addComponent(arrowTransform)
-        arrowGameObject.addComponent(MaterialComponent("colorWhite", true))
+
+        val northPointerGameObject = GameObject()
+        val northPointerMesh = meshLoadingRepository.loadMesh("compass_arrow_north.obj")
+        northPointerGameObject.addComponent(northPointerMesh)
+        northPointerGameObject.addComponent(
+            TransformationComponent(Vector3f(), Quaternionf().identity(), Vector3f(1f, 1f, 1f))
+        )
+        northPointerGameObject.addComponent(MaterialComponent("colorBlueNorth"))
+        meshRenderingRepository.addMeshToRenderList(camera, northPointerMesh)
+        arrowGameObject.addChild(northPointerGameObject)
+
+        val southPointerGameObject = GameObject()
+        val southPointerMesh = meshLoadingRepository.loadMesh("compass_arrow_south.obj")
+        southPointerGameObject.addComponent(southPointerMesh)
+        southPointerGameObject.addComponent(
+            TransformationComponent(Vector3f(), Quaternionf().identity(), Vector3f(1f, 1f, 1f))
+        )
+        southPointerGameObject.addComponent(MaterialComponent("colorRedSouth"))
+        meshRenderingRepository.addMeshToRenderList(camera, southPointerMesh)
+        arrowGameObject.addChild(southPointerGameObject)
+
         rootGameObject.addChild(arrowGameObject)
-        meshRenderingRepository.addMeshToRenderList(camera, arrowMesh)
     }
 
     fun onCameraInfoUpdate(cameraInfo: CameraInfo) {
