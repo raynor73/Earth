@@ -85,6 +85,7 @@ class CompassScene(
     private fun initTextures() {
         textureRepository.createTexture("colorArrowRed", 1, 1, intArrayOf(0xffcd0e3a.toInt()))
         textureRepository.createTexture("colorArrowBlue", 1, 1, intArrayOf(0xff00a0b0.toInt()))
+        textureRepository.createTexture("colorTargetMarker", 1, 1, intArrayOf(0xff00ff00.toInt()))
     }
 
     private fun initLights() {
@@ -135,7 +136,31 @@ class CompassScene(
         meshRenderingRepository.addMeshToRenderList(camera, southPointerMesh)
         arrowGameObject.addChild(southPointerGameObject)
 
+        initTargetMarker(arrowGameObject)
+
         rootGameObject.addChild(arrowGameObject)
+    }
+
+    private fun initTargetMarker(compassArrow: GameObject) {
+        val targetMarkerGameObject = GameObject()
+
+        val mesh = MeshComponent(
+            listOf(Vector3f(0f, 0f, 0f), Vector3f(0f, 0f, 10f)),
+            listOf(Vector3f(0f, 0f, -1f), Vector3f(0f, 0f, 1f)),
+            listOf(Vector2f(0f, 0f), Vector2f(0f, 0f)),
+            listOf(0, 1)
+        )
+        targetMarkerGameObject.addComponent(mesh)
+        targetMarkerGameObject.addComponent(
+            MaterialComponent("colorTargetMarker", isDoubleSided = true, isWireframe = true, isUnlit = true)
+        )
+        targetMarkerGameObject.addComponent(TransformationComponent(
+            Vector3f(), Quaternionf().identity(), Vector3f(1f, 1f, 1f)
+        ))
+
+        meshRenderingRepository.addMeshToRenderList(camera, mesh)
+
+        compassArrow.addChild(targetMarkerGameObject)
     }
 
     fun onCameraInfoUpdate(cameraInfo: CameraInfo) {

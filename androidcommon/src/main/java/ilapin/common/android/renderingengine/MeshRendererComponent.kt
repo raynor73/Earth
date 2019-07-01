@@ -159,7 +159,12 @@ class MeshRendererComponent(private val uniformFillingVisitor: UniformFillingVis
         } else {
             GLES20.glEnable(GLES20.GL_CULL_FACE)
         }
-        GLES20.glDrawElements(GLES20.GL_TRIANGLES, numberOfIndices, GLES20.GL_UNSIGNED_SHORT, indexBuffer)
+        val mode = if (material.isWireframe) {
+            GLES20.GL_LINE_STRIP
+        } else {
+            GLES20.GL_TRIANGLES
+        }
+        GLES20.glDrawElements(mode, numberOfIndices, GLES20.GL_UNSIGNED_SHORT, indexBuffer)
 
         GLES20.glDisableVertexAttribArray(uvHandle)
         normalHandle.takeIf { it >= 0 }?.let { GLES20.glDisableVertexAttribArray(normalHandle) }

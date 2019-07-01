@@ -17,17 +17,27 @@ class UniformFillingVisitor(private val renderingEngine: RenderingEngine) {
 
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0)
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, renderingEngine.getTextureIdOrFallback(currentMaterial.textureName))
-        GLES20.glGetUniformLocation(shader.program, "textureUniform").also { textureHandle ->
+        GLES20.glGetUniformLocation(shader.program, "textureUniform").takeIf { it >= 0 }?.let { textureHandle ->
             GLES20.glUniform1i(textureHandle, 0)
         }
 
-        GLES20.glGetUniformLocation(shader.program, "ambientColor").also { ambientColorHandle ->
+        GLES20.glGetUniformLocation(shader.program, "ambientColor").takeIf { it >= 0 }?.let { ambientColorHandle ->
             GLES20.glUniform3f(
                 ambientColorHandle,
                 renderingEngine.ambientColor.x(),
                 renderingEngine.ambientColor.y(),
                 renderingEngine.ambientColor.z()
             )
+        }
+    }
+    
+    fun visitUnlitShader(shader: UnlitShader) {
+        val currentMaterial = material ?: return
+
+        GLES20.glActiveTexture(GLES20.GL_TEXTURE0)
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, renderingEngine.getTextureIdOrFallback(currentMaterial.textureName))
+        GLES20.glGetUniformLocation(shader.program, "textureUniform").takeIf { it >= 0 }?.let { textureHandle ->
+            GLES20.glUniform1i(textureHandle, 0)
         }
     }
 
@@ -65,7 +75,7 @@ class UniformFillingVisitor(private val renderingEngine: RenderingEngine) {
 
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0)
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, renderingEngine.getTextureIdOrFallback(currentMaterial.textureName))
-        GLES20.glGetUniformLocation(shader.program, "textureUniform").also { textureHandle ->
+        GLES20.glGetUniformLocation(shader.program, "textureUniform").takeIf { it >= 0 }?.let { textureHandle ->
             GLES20.glUniform1i(textureHandle, 0)
         }
     }

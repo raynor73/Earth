@@ -36,6 +36,7 @@ class RenderingEngine(
     private val ambientShader = AmbientShader(context)
     private val directionalLightShader = DirectionalLightShader(context)
     private val cameraShader = CameraShader(context)
+    private val unlitShader = UnlitShader(context)
 
     val ambientColor: Vector3fc
         get() = _ambientColor
@@ -168,7 +169,12 @@ class RenderingEngine(
                 if (material.textureName == getDeviceCameraTextureName()) {
                     it.render(camera, cameraShader, null)
                 } else {
-                    it.render(camera, ambientShader, null)
+                    val shader = if (material.isUnlit) {
+                        unlitShader
+                    } else {
+                        ambientShader
+                    }
+                    it.render(camera, shader, null)
                 }
             }
 
@@ -179,7 +185,10 @@ class RenderingEngine(
 
             cameraToDirectionalLights[camera].forEach { light ->
                 cameraToMeshRenderers[camera].forEach { meshRenderer ->
-                    meshRenderer.render(camera, directionalLightShader, light)
+                    val material = meshRenderer.gameObject?.getComponent(MaterialComponent::class.java) ?: return
+                    if (!material.isUnlit) {
+                        meshRenderer.render(camera, directionalLightShader, light)
+                    }
                 }
             }
 
