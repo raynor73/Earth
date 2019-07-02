@@ -14,7 +14,7 @@
             android:layout_margin="16dp"
             android:textColor="@color/white"
             android:textSize="50sp"
-            android:fontFamily="@font/roboto_bold"
+            android:fontFamily="@font/roboto_mono_bold"
             android:shadowColor="@color/black"
             android:shadowDx="1"
             android:shadowDy="1"
