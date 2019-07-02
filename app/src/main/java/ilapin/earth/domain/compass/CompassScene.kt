@@ -60,7 +60,7 @@ class CompassScene(
         initReferenceDebugObject()
 
         renderingSettingsRepository.setClearColor(0f, 0f, 0f, 0f)
-        renderingSettingsRepository.setAmbientColor(0.3f, 0.3f, 0.3f)
+        renderingSettingsRepository.setAmbientColor(0.1f, 0.1f, 0.1f)
 
         subscription = orientationRepository.orientation().subscribe { orientation ->
             tmpMatrix.set(orientation.rotationMatrix).invert()
@@ -124,7 +124,10 @@ class CompassScene(
         val light1GameObject = GameObject()
         light1GameObject.addComponent(TransformationComponent(
             Vector3f(),
-            Quaternionf().identity().rotateZ((-Math.PI / 2).toFloat()),
+            Quaternionf()
+                .identity()
+                .rotateX((Math.PI / 2).toFloat())
+                .rotateY((Math.PI / 8).toFloat()),
             Vector3f(1f, 1f, 1f)
         ))
         val light1Component = DirectionalLightComponent(Vector3f(1f, 1f, 1f))
@@ -135,7 +138,9 @@ class CompassScene(
         val light2GameObject = GameObject()
         light2GameObject.addComponent(TransformationComponent(
             Vector3f(),
-            Quaternionf().identity().rotateZ((Math.PI / 2).toFloat()),
+            Quaternionf()
+                .identity()
+                .rotateZ((Math.PI / 8).toFloat()),
             Vector3f(1f, 1f, 1f)
         ))
         val light2Component = DirectionalLightComponent(Vector3f(0.8f, 0.8f, 0.8f))
