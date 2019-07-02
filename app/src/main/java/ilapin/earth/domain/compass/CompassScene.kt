@@ -57,6 +57,8 @@ class CompassScene(
         initPreviewPlane()
         initLights()
 
+        initReferenceDebugObject()
+
         renderingSettingsRepository.setClearColor(0f, 0f, 0f, 0f)
         renderingSettingsRepository.setAmbientColor(0.3f, 0.3f, 0.3f)
 
@@ -65,6 +67,32 @@ class CompassScene(
             tmpQuaternion.setFromUnnormalized(tmpMatrix)
             arrowTransform.rotation = tmpQuaternion
         }
+    }
+
+    private fun initReferenceDebugObject() {
+        rootGameObject.addChild(DebugLine(
+            Vector3f(0f, -0.5f, -3f),
+            Vector3f(1f, -0.5f, -3f),
+            camera,
+            meshRenderingRepository,
+            "colorDebugGreen"
+        ))
+
+        rootGameObject.addChild(DebugLine(
+            Vector3f(0f, -0.5f, -3f),
+            Vector3f(0f, -0.5f, -2f),
+            camera,
+            meshRenderingRepository,
+            "colorDebugBlue"
+        ))
+
+        rootGameObject.addChild(DebugLine(
+            Vector3f(0f, -0.5f, -3f),
+            Vector3f(0f, 0.5f, -3f),
+            camera,
+            meshRenderingRepository,
+            "colorDebugRed"
+        ))
     }
 
     fun setupOrthoCamera() {
@@ -86,6 +114,10 @@ class CompassScene(
         textureRepository.createTexture("colorArrowRed", 1, 1, intArrayOf(0xffcd0e3a.toInt()))
         textureRepository.createTexture("colorArrowBlue", 1, 1, intArrayOf(0xff00a0b0.toInt()))
         textureRepository.createTexture("colorTargetMarker", 1, 1, intArrayOf(0xff00ff00.toInt()))
+
+        textureRepository.createTexture("colorDebugRed", 1, 1, intArrayOf(0xffff0000.toInt()))
+        textureRepository.createTexture("colorDebugGreen", 1, 1, intArrayOf(0xff00ff00.toInt()))
+        textureRepository.createTexture("colorDebugBlue", 1, 1, intArrayOf(0xff0000ff.toInt()))
     }
 
     private fun initLights() {

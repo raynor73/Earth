@@ -1,6 +1,6 @@
 package ilapin.engine3d
 
-class GameObject {
+open class GameObject {
 
     var isEnabled = true
 

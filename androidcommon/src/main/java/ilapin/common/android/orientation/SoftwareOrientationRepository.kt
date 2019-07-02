@@ -50,6 +50,7 @@ class SoftwareOrientationRepository(
                     orientationData[0],
                     orientationData[1],
                     orientationData[2],
+                    magneticField.accuracy,
                     maxOf(acceleration.timestamp, magneticField.timestamp)
                 )
             }

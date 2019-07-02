@@ -16,6 +16,11 @@ class L {
             Timber.e(t, msg, *args)
         }
 
+        fun e(tag: String, msg: String, vararg args: Any) {
+            Timber.tag(tag)
+            Timber.e(msg, *args)
+        }
+
         fun e(tag: String, t: Throwable) {
             Timber.tag(tag)
             Timber.e(t)

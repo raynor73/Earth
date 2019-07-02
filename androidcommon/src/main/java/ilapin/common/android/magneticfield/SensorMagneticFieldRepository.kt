@@ -4,6 +4,7 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import ilapin.common.android.log.L
 import ilapin.common.magneticfield.MagneticField
 import ilapin.common.magneticfield.MagneticFieldRepository
 import io.reactivex.Observable
@@ -25,6 +26,15 @@ class SensorMagneticFieldRepository(private val sensorManager: SensorManager) : 
                                 event.values[0],
                                 event.values[1],
                                 event.values[2],
+                                when (event.accuracy) {
+                                    SensorManager.SENSOR_STATUS_ACCURACY_LOW -> MagneticField.Accuracy.LOW
+                                    SensorManager.SENSOR_STATUS_ACCURACY_MEDIUM -> MagneticField.Accuracy.MEDIUM
+                                    SensorManager.SENSOR_STATUS_ACCURACY_HIGH -> MagneticField.Accuracy.HIGH
+                                    else -> {
+                                        L.e(LOG_TAG, "Unexpected magnetic field accuracy ${event.accuracy}")
+                                        MagneticField.Accuracy.HIGH
+                                    }
+                                },
                                 event.timestamp
                             )
                         )
@@ -49,5 +59,10 @@ class SensorMagneticFieldRepository(private val sensorManager: SensorManager) : 
                 }
             }
         }
+    }
+
+    companion object {
+
+        private const val LOG_TAG = "SensorMagneticFieldRepository"
     }
 }
