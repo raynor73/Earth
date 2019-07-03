@@ -133,6 +133,10 @@ class CompassActivity : AppCompatActivity() {
             renderer?.putMessage(orientation)
         })
 
+        pausableSubscriptions.add(accelerationRepository.acceleration().subscribe { acceleration ->
+            renderer?.putMessage(acceleration)
+        })
+
         cameraPermissionResolver.check()
 
         renderer?.putMessage(GLSurfaceViewRenderer.Message.UI_RESUMED)

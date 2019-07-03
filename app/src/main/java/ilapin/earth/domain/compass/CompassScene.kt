@@ -1,19 +1,25 @@
 package ilapin.earth.domain.compass
 
+import ilapin.common.acceleration.AccelerationRepository
 import ilapin.common.meshloader.MeshLoadingRepository
 import ilapin.common.orientation.OrientationRepository
 import ilapin.common.renderingengine.*
 import ilapin.earth.domain.camera.CameraInfo
 import ilapin.engine3d.*
+import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.disposables.Disposable
 import org.joml.Matrix4f
 import org.joml.Quaternionf
 import org.joml.Vector2f
 import org.joml.Vector3f
+import java.util.concurrent.TimeUnit
+import kotlin.math.abs
 
 class CompassScene(
     renderingSettingsRepository: RenderingSettingsRepository,
     orientationRepository: OrientationRepository,
+    accelerationRepository: AccelerationRepository,
     private val textureRepository: TextureRepository,
     private val specialTextureRepository: SpecialTextureRepository,
     private val meshRenderingRepository: MeshRenderingRepository,
@@ -25,7 +31,14 @@ class CompassScene(
         addComponent(TransformationComponent(Vector3f(), Quaternionf().identity(), Vector3f(1f, 1f, 1f)))
     }
 
-    private var subscriptions = CompositeDisposable()
+    private val spiritLevelStaticPartGameObject = GameObject()
+    private val spiritLevelDynamicPartGameObject = GameObject()
+
+    private val subscriptions = CompositeDisposable()
+    private var blinkingIntervalSubscription: Disposable? = null
+
+    @Volatile
+    private var isSpiritLevelVisible = true
 
     private val tmpVector = Vector3f()
     private val tmpQuaternion = Quaternionf()
@@ -43,7 +56,7 @@ class CompassScene(
     )
     private val spiritLevelStaticPartTransform = TransformationComponent(
         Vector3f(2f, 1f, -10f),
-        Quaternionf().identity().rotateZ((-Math.PI / 2).toFloat()),
+        Quaternionf().identity(),
         Vector3f(1f, 1f, 1f)
     )
     private val spiritLevelDynamicPartTransform = TransformationComponent(
@@ -59,7 +72,8 @@ class CompassScene(
     private val camera = PerspectiveCameraComponent()
     private val previewCamera = OrthoCameraComponent()
 
-    private val smoother = RotationMatrixSmoother(10)
+    private val rotationMatrixSmoother = RotationMatrixSmoother(10)
+    private val vectorSmoother = VectorSmoother(10)
 
     override val cameras: List<CameraComponent> = listOf(previewCamera, camera)
 
@@ -75,67 +89,105 @@ class CompassScene(
         initPreviewPlane()
         initLights()
 
-        //initReferenceDebugObject()
-
         renderingSettingsRepository.setClearColor(0f, 0f, 0f, 0f)
         renderingSettingsRepository.setAmbientColor(0.1f, 0.1f, 0.1f)
 
-        orientationRepository.orientation().map { it.rotationMatrix }.subscribe(smoother)
-        subscriptions.add(smoother.smoothedRotationMatrix.subscribe { rotationMatrix ->
+        orientationRepository.orientation().map { it.rotationMatrix }.subscribe(rotationMatrixSmoother)
+        accelerationRepository.acceleration().map { tmpVector.set(it.x, it.y, it.z) }.subscribe(vectorSmoother)
+
+        subscriptions.add(rotationMatrixSmoother.smoothedRotationMatrix.subscribe { rotationMatrix ->
             tmpMatrix.set(rotationMatrix).invert()
             tmpQuaternion.setFromUnnormalized(tmpMatrix)
             arrowTransform.rotation = tmpQuaternion
+        })
+        subscriptions.add(vectorSmoother.smoothedVector.subscribe { vector ->
+            tmpVector.set(0f, 1f, 0f)
+            tmpQuaternion.identity().rotateTo(tmpVector, vector)
+            spiritLevelDynamicPartTransform.rotation = tmpQuaternion
 
-            spiritLevelDynamicPartTransform.rotation = tmpQuaternion.rotateLocalZ((-Math.PI / 2).toFloat())
+            tmpVector.set(vector).normalize()
+            when {
+                abs(tmpVector.x) < 0.1f -> {
+                    setSpiritLevelMaterial(colorOkMaterial)
+                    stopSpiritLevelBlinking()
+                }
+                abs(tmpVector.x) < 0.3f -> {
+                    setSpiritLevelMaterial(colorWarningMaterial)
+                    stopSpiritLevelBlinking()
+                }
+                else -> {
+                    setSpiritLevelMaterial(colorAlertMaterial)
+                    startSpiritLevelBlinking()
+                }
+            }
         })
     }
 
-    private fun initSpiritLevel() {
-        val staticPartGameObject = GameObject()
+    private fun startSpiritLevelBlinking() {
+        if (blinkingIntervalSubscription != null) {
+            return
+        }
 
-        staticPartGameObject.addComponent(colorOkMaterial)
-        staticPartGameObject.addComponent(spiritLevelStaticPartTransform)
-        val staticPartMesh = meshLoadingRepository.loadMesh("grid.obj")
-        staticPartGameObject.addComponent(staticPartMesh)
-        meshRenderingRepository.addMeshToRenderList(camera, staticPartMesh)
+        /*object : Scheduler() {
+            override fun createWorker(): Worker {
+                return object : Worker() {
 
-        rootGameObject.addChild(staticPartGameObject)
+                    override fun isDisposed(): Boolean {
+                        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                    }
 
-        val dynamicPartGameObject = GameObject()
+                    override fun schedule(run: Runnable, delay: Long, unit: TimeUnit): Disposable {
+                        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                    }
 
-        dynamicPartGameObject.addComponent(colorOkMaterial)
-        dynamicPartGameObject.addComponent(spiritLevelDynamicPartTransform)
-        val dynamicPartMesh = meshLoadingRepository.loadMesh("grid.obj")
-        dynamicPartGameObject.addComponent(dynamicPartMesh)
-        meshRenderingRepository.addMeshToRenderList(camera, dynamicPartMesh)
+                    override fun dispose() {
+                        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                    }
+                }
+            }
+        }*/
 
-        rootGameObject.addChild(dynamicPartGameObject)
+        blinkingIntervalSubscription = Observable.interval(500, TimeUnit.MILLISECONDS).subscribe {
+            isSpiritLevelVisible = !isSpiritLevelVisible
+        }
     }
 
-    private fun initReferenceDebugObject() {
-        rootGameObject.addChild(DebugLine(
-            Vector3f(0f, -0.5f, -3f),
-            Vector3f(1f, -0.5f, -3f),
-            camera,
-            meshRenderingRepository,
-            "colorDebugGreen"
-        ))
+    private fun stopSpiritLevelBlinking() {
+        blinkingIntervalSubscription?.let {
+            it.dispose()
+            blinkingIntervalSubscription = null
+            isSpiritLevelVisible = true
+        }
+    }
 
-        rootGameObject.addChild(DebugLine(
-            Vector3f(0f, -0.5f, -3f),
-            Vector3f(0f, -0.5f, -2f),
-            camera,
-            meshRenderingRepository,
-            "colorDebugBlue"
-        ))
+    private fun setSpiritLevelMaterial(material: MaterialComponent) {
+        spiritLevelStaticPartGameObject.getComponent(MaterialComponent::class.java)?.let {
+            spiritLevelStaticPartGameObject.removeComponent(it)
+        }
+        spiritLevelStaticPartGameObject.addComponent(material)
 
-        rootGameObject.addChild(DebugLine(
-            Vector3f(0f, -0.5f, -3f),
-            Vector3f(0f, 0.5f, -3f),
-            camera,
-            meshRenderingRepository,
-            "colorDebugRed"
-        ))
+        spiritLevelDynamicPartGameObject.getComponent(MaterialComponent::class.java)?.let {
+            spiritLevelDynamicPartGameObject.removeComponent(it)
+        }
+        spiritLevelDynamicPartGameObject.addComponent(material)
+    }
+
+    private fun initSpiritLevel() {
+        spiritLevelStaticPartGameObject.addComponent(colorOkMaterial)
+        spiritLevelStaticPartGameObject.addComponent(spiritLevelStaticPartTransform)
+        val staticPartMesh = meshLoadingRepository.loadMesh("grid.obj")
+        spiritLevelStaticPartGameObject.addComponent(staticPartMesh)
+        meshRenderingRepository.addMeshToRenderList(camera, staticPartMesh)
+
+        rootGameObject.addChild(spiritLevelStaticPartGameObject)
+
+        spiritLevelDynamicPartGameObject.addComponent(colorOkMaterial)
+        spiritLevelDynamicPartGameObject.addComponent(spiritLevelDynamicPartTransform)
+        val dynamicPartMesh = meshLoadingRepository.loadMesh("grid.obj")
+        spiritLevelDynamicPartGameObject.addComponent(dynamicPartMesh)
+        meshRenderingRepository.addMeshToRenderList(camera, dynamicPartMesh)
+
+        rootGameObject.addChild(spiritLevelDynamicPartGameObject)
     }
 
     fun setupOrthoCamera() {
@@ -157,10 +209,6 @@ class CompassScene(
         textureRepository.createTexture("colorArrowRed", 1, 1, intArrayOf(0xffcd0e3a.toInt()))
         textureRepository.createTexture("colorArrowBlue", 1, 1, intArrayOf(0xff00a0b0.toInt()))
         textureRepository.createTexture("colorTargetMarker", 1, 1, intArrayOf(0xff00ff00.toInt()))
-
-        /*textureRepository.createTexture("colorDebugRed", 1, 1, intArrayOf(0xffff0000.toInt()))
-        textureRepository.createTexture("colorDebugGreen", 1, 1, intArrayOf(0xff00ff00.toInt()))
-        textureRepository.createTexture("colorDebugBlue", 1, 1, intArrayOf(0xff0000ff.toInt()))*/
 
         textureRepository.createTexture("colorOk", 1, 1, intArrayOf(0xff00ff00.toInt()))
         textureRepository.createTexture("colorWarning", 1, 1, intArrayOf(0xffffff00.toInt()))
@@ -261,7 +309,10 @@ class CompassScene(
         previewPlaneTransform.rotation = tmpQuaternion
     }
 
-    override fun update() {}
+    override fun update() {
+        spiritLevelStaticPartGameObject.isEnabled = isSpiritLevelVisible
+        spiritLevelDynamicPartGameObject.isEnabled = isSpiritLevelVisible
+    }
 
     override fun onScreenConfigUpdate(width: Int, height: Int) {
         updatePerspectiveCameraConfig(width, height)
@@ -270,7 +321,7 @@ class CompassScene(
 
     override fun onCleared() {
         subscriptions.dispose()
-        smoother.dispose()
+        rotationMatrixSmoother.dispose()
     }
 
     private fun initPreviewPlane() {

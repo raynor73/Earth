@@ -1,6 +1,7 @@
 package ilapin.earth.ui.compass
 
 import android.content.Context
+import ilapin.common.acceleration.AccelerationFromMessageQueueRepository
 import ilapin.common.android.meshloader.ObjMeshLoadingRepository
 import ilapin.common.android.renderingengine.BaseGLSurfaceRenderer
 import ilapin.common.messagequeue.MessageQueue
@@ -24,6 +25,7 @@ class GLSurfaceViewRenderer(private val context: Context) : BaseGLSurfaceRendere
         val scene = CompassScene(
             renderingEngine,
             OrientationFromMessageQueueRepository(messageQueue),
+            AccelerationFromMessageQueueRepository(messageQueue),
             renderingEngine,
             renderingEngine,
             renderingEngine,
