@@ -168,6 +168,7 @@ class MeshRendererComponent(private val uniformFillingVisitor: UniformFillingVis
         } else {
             GLES20.GL_TRIANGLES
         }
+        GLES20.glLineWidth(2f)
         GLES20.glDrawElements(mode, numberOfIndices, GLES20.GL_UNSIGNED_SHORT, indexBuffer)
 
         GLES20.glDisableVertexAttribArray(uvHandle)
