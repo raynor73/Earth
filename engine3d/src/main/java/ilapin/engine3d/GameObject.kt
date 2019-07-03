@@ -36,6 +36,7 @@ open class GameObject {
 
     fun update() {
         if (isEnabled) {
+            components.forEach { it.update() }
             _children.forEach { it.update() }
         }
     }

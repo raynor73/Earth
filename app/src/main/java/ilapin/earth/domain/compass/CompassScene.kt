@@ -4,22 +4,21 @@ import ilapin.common.acceleration.AccelerationRepository
 import ilapin.common.meshloader.MeshLoadingRepository
 import ilapin.common.orientation.OrientationRepository
 import ilapin.common.renderingengine.*
+import ilapin.common.time.TimeRepository
 import ilapin.earth.domain.camera.CameraInfo
 import ilapin.engine3d.*
-import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.disposables.Disposable
 import org.joml.Matrix4f
 import org.joml.Quaternionf
 import org.joml.Vector2f
 import org.joml.Vector3f
-import java.util.concurrent.TimeUnit
 import kotlin.math.abs
 
 class CompassScene(
     renderingSettingsRepository: RenderingSettingsRepository,
     orientationRepository: OrientationRepository,
     accelerationRepository: AccelerationRepository,
+    timeRepository: TimeRepository,
     private val textureRepository: TextureRepository,
     private val specialTextureRepository: SpecialTextureRepository,
     private val meshRenderingRepository: MeshRenderingRepository,
@@ -33,12 +32,10 @@ class CompassScene(
 
     private val spiritLevelStaticPartGameObject = GameObject()
     private val spiritLevelDynamicPartGameObject = GameObject()
+    private val spiritLevelStaticPartBlinker = BlinkerComponent(timeRepository, 250)
+    private val spiritLevelDynamicPartBlinker = BlinkerComponent(timeRepository, 250)
 
     private val subscriptions = CompositeDisposable()
-    private var blinkingIntervalSubscription: Disposable? = null
-
-    @Volatile
-    private var isSpiritLevelVisible = true
 
     private val tmpVector = Vector3f()
     private val tmpQuaternion = Quaternionf()
@@ -55,12 +52,12 @@ class CompassScene(
         Vector3f(1f, 1f, 1f)
     )
     private val spiritLevelStaticPartTransform = TransformationComponent(
-        Vector3f(2f, 1f, -10f),
+        Vector3f(2f, 0f, -10f),
         Quaternionf().identity(),
         Vector3f(1f, 1f, 1f)
     )
     private val spiritLevelDynamicPartTransform = TransformationComponent(
-        Vector3f(2f, 1f, -10f),
+        Vector3f(2f, 0f, -10f),
         Quaternionf().identity(),
         Vector3f(1f, 1f, 1f)
     )
@@ -124,40 +121,13 @@ class CompassScene(
     }
 
     private fun startSpiritLevelBlinking() {
-        if (blinkingIntervalSubscription != null) {
-            return
-        }
-
-        /*object : Scheduler() {
-            override fun createWorker(): Worker {
-                return object : Worker() {
-
-                    override fun isDisposed(): Boolean {
-                        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-                    }
-
-                    override fun schedule(run: Runnable, delay: Long, unit: TimeUnit): Disposable {
-                        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-                    }
-
-                    override fun dispose() {
-                        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-                    }
-                }
-            }
-        }*/
-
-        blinkingIntervalSubscription = Observable.interval(500, TimeUnit.MILLISECONDS).subscribe {
-            isSpiritLevelVisible = !isSpiritLevelVisible
-        }
+        spiritLevelStaticPartBlinker.startBlinking()
+        spiritLevelDynamicPartBlinker.startBlinking()
     }
 
     private fun stopSpiritLevelBlinking() {
-        blinkingIntervalSubscription?.let {
-            it.dispose()
-            blinkingIntervalSubscription = null
-            isSpiritLevelVisible = true
-        }
+        spiritLevelStaticPartBlinker.stopBlinking()
+        spiritLevelDynamicPartBlinker.stopBlinking()
     }
 
     private fun setSpiritLevelMaterial(material: MaterialComponent) {
@@ -186,6 +156,9 @@ class CompassScene(
         val dynamicPartMesh = meshLoadingRepository.loadMesh("grid.obj")
         spiritLevelDynamicPartGameObject.addComponent(dynamicPartMesh)
         meshRenderingRepository.addMeshToRenderList(camera, dynamicPartMesh)
+
+        spiritLevelStaticPartGameObject.addComponent(spiritLevelStaticPartBlinker)
+        spiritLevelDynamicPartGameObject.addComponent(spiritLevelDynamicPartBlinker)
 
         rootGameObject.addChild(spiritLevelDynamicPartGameObject)
     }
@@ -310,8 +283,7 @@ class CompassScene(
     }
 
     override fun update() {
-        spiritLevelStaticPartGameObject.isEnabled = isSpiritLevelVisible
-        spiritLevelDynamicPartGameObject.isEnabled = isSpiritLevelVisible
+        rootGameObject.update()
     }
 
     override fun onScreenConfigUpdate(width: Int, height: Int) {

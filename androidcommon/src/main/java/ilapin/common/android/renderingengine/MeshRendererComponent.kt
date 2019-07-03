@@ -27,7 +27,7 @@ class MeshRendererComponent(private val uniformFillingVisitor: UniformFillingVis
     private val bufferFloatArray = FloatArray(16)
 
     fun render(camera: CameraComponent, shader: Shader, light: GameObjectComponent?) {
-        if (gameObject?.isEnabled != true) {
+        if (!isEnabled) {
             return
         }
 

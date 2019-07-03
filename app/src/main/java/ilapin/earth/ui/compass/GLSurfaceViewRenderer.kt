@@ -4,6 +4,7 @@ import android.content.Context
 import ilapin.common.acceleration.AccelerationFromMessageQueueRepository
 import ilapin.common.android.meshloader.ObjMeshLoadingRepository
 import ilapin.common.android.renderingengine.BaseGLSurfaceRenderer
+import ilapin.common.android.time.LocalTimeRepository
 import ilapin.common.messagequeue.MessageQueue
 import ilapin.common.orientation.OrientationFromMessageQueueRepository
 import ilapin.earth.domain.camera.CameraActivator
@@ -26,6 +27,7 @@ class GLSurfaceViewRenderer(private val context: Context) : BaseGLSurfaceRendere
             renderingEngine,
             OrientationFromMessageQueueRepository(messageQueue),
             AccelerationFromMessageQueueRepository(messageQueue),
+            LocalTimeRepository(),
             renderingEngine,
             renderingEngine,
             renderingEngine,
