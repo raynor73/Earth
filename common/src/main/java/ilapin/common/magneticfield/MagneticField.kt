@@ -4,7 +4,7 @@ data class MagneticField(
     val x: Float,
     val y: Float,
     val z: Float,
-    val accuracy: MagneticField.Accuracy,
+    val accuracy: Accuracy,
     val timestamp: Long
 ) {
 
