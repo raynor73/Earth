@@ -5,7 +5,7 @@ import ilapin.common.orientation.OrientationRepository
 import ilapin.common.renderingengine.*
 import ilapin.earth.domain.camera.CameraInfo
 import ilapin.engine3d.*
-import io.reactivex.disposables.Disposable
+import io.reactivex.disposables.CompositeDisposable
 import org.joml.Matrix4f
 import org.joml.Quaternionf
 import org.joml.Vector2f
@@ -25,7 +25,7 @@ class CompassScene(
         addComponent(TransformationComponent(Vector3f(), Quaternionf().identity(), Vector3f(1f, 1f, 1f)))
     }
 
-    private var subscription: Disposable? = null
+    private var subscriptions = CompositeDisposable()
 
     private val tmpVector = Vector3f()
     private val tmpQuaternion = Quaternionf()
@@ -45,6 +45,8 @@ class CompassScene(
     private val camera = PerspectiveCameraComponent()
     private val previewCamera = OrthoCameraComponent()
 
+    private val smoother = RotationMatrixSmoother(10)
+
     override val cameras: List<CameraComponent> = listOf(previewCamera, camera)
 
     init {
@@ -62,11 +64,12 @@ class CompassScene(
         renderingSettingsRepository.setClearColor(0f, 0f, 0f, 0f)
         renderingSettingsRepository.setAmbientColor(0.1f, 0.1f, 0.1f)
 
-        subscription = orientationRepository.orientation().subscribe { orientation ->
-            tmpMatrix.set(orientation.rotationMatrix).invert()
+        orientationRepository.orientation().map { it.rotationMatrix }.subscribe(smoother)
+        subscriptions.add(smoother.smoothedRotationMatrix.subscribe { rotationMatrix ->
+            tmpMatrix.set(rotationMatrix).invert()
             tmpQuaternion.setFromUnnormalized(tmpMatrix)
             arrowTransform.rotation = tmpQuaternion
-        }
+        })
     }
 
     private fun initReferenceDebugObject() {
@@ -224,7 +227,8 @@ class CompassScene(
     }
 
     override fun onCleared() {
-        subscription?.dispose()
+        subscriptions.dispose()
+        smoother.dispose()
     }
 
     private fun initPreviewPlane() {
