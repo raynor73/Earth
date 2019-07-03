@@ -23,6 +23,10 @@ import ilapin.earth.frameworkdependent.camera.LocalCameraPermissionRepository
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.activity_compass.*
 import kotlinx.android.synthetic.main.activity_main.containerLayout
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics
+import kotlin.math.atan2
+import kotlin.math.cos
+import kotlin.math.sin
 
 class CompassActivity : AppCompatActivity() {
 
@@ -30,6 +34,9 @@ class CompassActivity : AppCompatActivity() {
 
     private val pausableSubscriptions = CompositeDisposable()
     private val permanentSubscriptions = CompositeDisposable()
+
+    private val azimuthSinStatistics = DescriptiveStatistics(10)
+    private val azimuthCosStatistics = DescriptiveStatistics(10)
 
     private lateinit var magneticFieldRepository: MagneticFieldRepository
     private lateinit var accelerationRepository: AccelerationRepository
@@ -110,7 +117,10 @@ class CompassActivity : AppCompatActivity() {
                     View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
 
         pausableSubscriptions.add(orientationRepository.orientation().subscribe { orientation ->
-            val azimuthDegrees = Math.toDegrees(orientation.azimuth.toDouble())
+            azimuthSinStatistics.addValue(sin(orientation.azimuth.toDouble()))
+            azimuthCosStatistics.addValue(cos(orientation.azimuth.toDouble()))
+
+            val azimuthDegrees = Math.toDegrees(atan2(azimuthSinStatistics.mean, azimuthCosStatistics.mean))
             val azimuthDegreesPositiveOnly = if (azimuthDegrees >= 0) {
                 azimuthDegrees
             } else {
