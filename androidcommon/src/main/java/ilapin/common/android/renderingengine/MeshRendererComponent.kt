@@ -27,6 +27,10 @@ class MeshRendererComponent(private val uniformFillingVisitor: UniformFillingVis
     private val bufferFloatArray = FloatArray(16)
 
     fun render(camera: CameraComponent, shader: Shader, light: GameObjectComponent?) {
+        if (gameObject?.isEnabled != true) {
+            return
+        }
+
         val material = gameObject?.getComponent(MaterialComponent::class.java) ?: return
         val transformation = gameObject?.getComponent(TransformationComponent::class.java) ?: return
         val viewProjectionMatrix = camera.getViewProjectionMatrix() ?: return

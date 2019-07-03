@@ -41,6 +41,20 @@ class CompassScene(
         Quaternionf().identity(),
         Vector3f(1f, 1f, 1f)
     )
+    private val spiritLevelStaticPartTransform = TransformationComponent(
+        Vector3f(2f, 1f, -10f),
+        Quaternionf().identity().rotateZ((-Math.PI / 2).toFloat()),
+        Vector3f(1f, 1f, 1f)
+    )
+    private val spiritLevelDynamicPartTransform = TransformationComponent(
+        Vector3f(2f, 1f, -10f),
+        Quaternionf().identity(),
+        Vector3f(1f, 1f, 1f)
+    )
+
+    private val colorOkMaterial = MaterialComponent("colorOk", isDoubleSided = true, isWireframe = true, isUnlit = true)
+    private val colorWarningMaterial = MaterialComponent("colorWarning", isDoubleSided = true, isWireframe = true, isUnlit = true)
+    private val colorAlertMaterial = MaterialComponent("colorAlert", isDoubleSided = true, isWireframe = true, isUnlit = true)
 
     private val camera = PerspectiveCameraComponent()
     private val previewCamera = OrthoCameraComponent()
@@ -57,6 +71,7 @@ class CompassScene(
 
         initCompassArrow()
         initTargetMarker()
+        initSpiritLevel()
         initPreviewPlane()
         initLights()
 
@@ -70,7 +85,31 @@ class CompassScene(
             tmpMatrix.set(rotationMatrix).invert()
             tmpQuaternion.setFromUnnormalized(tmpMatrix)
             arrowTransform.rotation = tmpQuaternion
+
+            spiritLevelDynamicPartTransform.rotation = tmpQuaternion.rotateLocalZ((-Math.PI / 2).toFloat())
         })
+    }
+
+    private fun initSpiritLevel() {
+        val staticPartGameObject = GameObject()
+
+        staticPartGameObject.addComponent(colorOkMaterial)
+        staticPartGameObject.addComponent(spiritLevelStaticPartTransform)
+        val staticPartMesh = meshLoadingRepository.loadMesh("grid.obj")
+        staticPartGameObject.addComponent(staticPartMesh)
+        meshRenderingRepository.addMeshToRenderList(camera, staticPartMesh)
+
+        rootGameObject.addChild(staticPartGameObject)
+
+        val dynamicPartGameObject = GameObject()
+
+        dynamicPartGameObject.addComponent(colorOkMaterial)
+        dynamicPartGameObject.addComponent(spiritLevelDynamicPartTransform)
+        val dynamicPartMesh = meshLoadingRepository.loadMesh("grid.obj")
+        dynamicPartGameObject.addComponent(dynamicPartMesh)
+        meshRenderingRepository.addMeshToRenderList(camera, dynamicPartMesh)
+
+        rootGameObject.addChild(dynamicPartGameObject)
     }
 
     private fun initReferenceDebugObject() {
@@ -119,9 +158,13 @@ class CompassScene(
         textureRepository.createTexture("colorArrowBlue", 1, 1, intArrayOf(0xff00a0b0.toInt()))
         textureRepository.createTexture("colorTargetMarker", 1, 1, intArrayOf(0xff00ff00.toInt()))
 
-        textureRepository.createTexture("colorDebugRed", 1, 1, intArrayOf(0xffff0000.toInt()))
+        /*textureRepository.createTexture("colorDebugRed", 1, 1, intArrayOf(0xffff0000.toInt()))
         textureRepository.createTexture("colorDebugGreen", 1, 1, intArrayOf(0xff00ff00.toInt()))
-        textureRepository.createTexture("colorDebugBlue", 1, 1, intArrayOf(0xff0000ff.toInt()))
+        textureRepository.createTexture("colorDebugBlue", 1, 1, intArrayOf(0xff0000ff.toInt()))*/
+
+        textureRepository.createTexture("colorOk", 1, 1, intArrayOf(0xff00ff00.toInt()))
+        textureRepository.createTexture("colorWarning", 1, 1, intArrayOf(0xffffff00.toInt()))
+        textureRepository.createTexture("colorAlert", 1, 1, intArrayOf(0xffff0000.toInt()))
     }
 
     private fun initLights() {
