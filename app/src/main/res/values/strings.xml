@@ -18,6 +18,7 @@
     <string name="hint_offset_y">Offset Y</string>
     <string name="increase_button">+</string>
     <string name="decrease_button">-</string>
+    <string name="no_browser_error">Нет приложения, которое могло бы открыть ссылку</string>
 
     <string name="draw_mode_prompt">Режим отрисовки</string>
 
@@ -31,5 +32,9 @@
     <string name="enable_camera">Включить дополненную реальность</string>
     <string name="camera_rationale_message">Необходим доступ к камере, чтобы работать в режиме дополненной реальности.</string>
     <string name="goto_settings">Включить камеру в системных настройках</string>
+
+    <string name="magnetic_sensor_calibration_required_title">Необходима калибровка</string>
+    <string name="magnetic_sensor_calibration_required_message">Ухудшились показания сенсора магнитного поля, необходимо откалибровать сенсор.</string>
+    <string name="magnetic_sensor_calibration_required_how">Как это сделать?</string>
 
 </resources>
