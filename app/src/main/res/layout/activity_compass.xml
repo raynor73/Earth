@@ -21,34 +21,49 @@
             android:shadowRadius="5"
             tools:text="045°"/>
 
-    <Button
-            android:id="@+id/enableCameraButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:layout_gravity="bottom|center_horizontal"
-            android:text="@string/enable_camera" />
-
     <LinearLayout
-            android:id="@+id/gotoPermissionSettingsLayout"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:layout_gravity="bottom|center_horizontal"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:layout_gravity="bottom|center_horizontal">
 
-        <TextView
+        <ImageView
+                android:id="@+id/magneticSensorCalibrationButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/white"
-                android:text="@string/camera_rationale_message" />
+                android:layout_gravity="right"
+                tools:ignore="ContentDescription,RtlHardcoded" />
 
         <Button
-                android:id="@+id/gotoPermissionSettingsButton"
+                android:id="@+id/enableCameraButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_margin="16dp"
                 android:layout_gravity="center_horizontal"
-                android:text="@string/goto_settings" />
+                android:text="@string/enable_camera" />
+
+        <LinearLayout
+                android:id="@+id/gotoPermissionSettingsLayout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:layout_gravity="center_horizontal"
+                android:orientation="vertical">
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:text="@string/camera_rationale_message" />
+
+            <Button
+                    android:id="@+id/gotoPermissionSettingsButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:text="@string/goto_settings" />
+
+        </LinearLayout>
 
     </LinearLayout>
 
