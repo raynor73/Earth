@@ -8,6 +8,7 @@ import ilapin.common.android.time.LocalTimeRepository
 import ilapin.common.messagequeue.MessageQueue
 import ilapin.common.orientation.OrientationFromMessageQueueRepository
 import ilapin.earth.domain.camera.CameraActivator
+import ilapin.earth.domain.camera.CameraInfo
 import ilapin.earth.domain.compass.CompassScene
 import ilapin.earth.frameworkdependent.camera.LocalCameraRepository
 import ilapin.engine3d.Scene
@@ -52,6 +53,15 @@ class GLSurfaceViewRenderer(private val context: Context) : BaseGLSurfaceRendere
         subscriptions.add(cameraActivator.cameraInfo.subscribe { info ->
             scene.onCameraInfoUpdate(info)
         })
+
+        subscriptions.add(
+            cameraActivator.cameraInfo.subscribe {
+                val camera = cameraActivator.camera ?: throw IllegalArgumentException("No camera available")
+                val previewSize = camera.getSupportedPreviewSizes().maxBy { it.width } ?: throw IllegalArgumentException("No camera preview size found")
+                camera.setPreviewSize(previewSize)
+                scene.onCameraInfoUpdate(CameraInfo(previewSize, camera.getSensorOrientation()))
+            }
+        )
 
         return scene
     }

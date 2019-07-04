@@ -3,6 +3,7 @@ package ilapin.earth.domain.camera
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
 import io.reactivex.functions.BiFunction
+import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 
 class CameraActivator(
@@ -10,7 +11,7 @@ class CameraActivator(
     private val cameraRepository: CameraRepository
 ) {
     private val isUiActiveSubject = PublishSubject.create<Boolean>()
-    private val cameraInfoSubject = PublishSubject.create<CameraInfo>()
+    private val cameraInfoSubject = BehaviorSubject.create<CameraInfo>()
 
     private var subscription: Disposable? = null
 
@@ -29,9 +30,9 @@ class CameraActivator(
         ).subscribe { state ->
             if (state.isCameraPermissionGranted && state.isUiActive) {
                 val camera = cameraRepository.openCamera()
+                _camera = camera
                 cameraInfoSubject.onNext(CameraInfo(camera.getPreviewSize(), camera.getSensorOrientation()))
                 camera.startPreview()
-                this._camera = camera
             } else {
                 releaseCamera()
             }
