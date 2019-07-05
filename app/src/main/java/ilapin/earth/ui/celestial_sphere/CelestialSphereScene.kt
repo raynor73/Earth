@@ -2,10 +2,7 @@ package ilapin.earth.ui.celestial_sphere
 
 import ilapin.common.input.TouchScreenRepository
 import ilapin.common.meshloader.MeshLoadingRepository
-import ilapin.common.renderingengine.DisplayMetricsRepository
-import ilapin.common.renderingengine.MeshRenderingRepository
-import ilapin.common.renderingengine.RenderingSettingsRepository
-import ilapin.common.renderingengine.TextureRepository
+import ilapin.common.renderingengine.*
 import ilapin.earth.domain.celestial_sphere.ScrollController
 import ilapin.engine3d.*
 import io.reactivex.disposables.CompositeDisposable
@@ -15,6 +12,7 @@ import org.joml.Vector3f
 class CelestialSphereScene(
     renderingSettingsRepository: RenderingSettingsRepository,
     private val meshRenderingRepository: MeshRenderingRepository,
+    private val lightsRenderingRepository: LightsRenderingRepository,
     private val textureRepository: TextureRepository,
     private val meshLoadingRepository: MeshLoadingRepository,
     touchScreenRepository: TouchScreenRepository,
@@ -43,12 +41,13 @@ class CelestialSphereScene(
     private val pixelDensityFactor = displayMetricsRepository.getPixelDensityFactor()
 
     init {
-        renderingSettingsRepository.setClearColor(0.5f, 0.5f, 0.5f, 1.0f)
+        renderingSettingsRepository.setClearColor(0f, 0f, 0f, 1.0f)
         renderingSettingsRepository.setAmbientColor(0.1f, 0.1f, 0.1f)
 
         setupPerspectiveCamera()
 
         initTextures()
+        initLights()
 
         initCelestialSphere()
 
@@ -77,6 +76,35 @@ class CelestialSphereScene(
         textureRepository.createTexture("colorGreen", 1, 1, intArrayOf(0xff00ff00.toInt()))
     }
 
+    private fun initLights() {
+        val light1GameObject = GameObject()
+        light1GameObject.addComponent(TransformationComponent(
+            Vector3f(),
+            Quaternionf()
+                .identity()
+                .rotateX((Math.PI / 4).toFloat())
+                .rotateY((Math.PI / 8).toFloat()),
+            Vector3f(1f, 1f, 1f)
+        ))
+        val light1Component = DirectionalLightComponent(Vector3f(1f, 1f, 1f))
+        light1GameObject.addComponent(light1Component)
+        rootGameObject.addChild(light1GameObject)
+        lightsRenderingRepository.addDirectionalLight(perspectiveCamera, light1Component)
+
+        /*val light2GameObject = GameObject()
+        light2GameObject.addComponent(TransformationComponent(
+            Vector3f(),
+            Quaternionf()
+                .identity()
+                .rotateZ((Math.PI / 8).toFloat()),
+            Vector3f(1f, 1f, 1f)
+        ))
+        val light2Component = DirectionalLightComponent(Vector3f(0.8f, 0.8f, 0.8f))
+        light2GameObject.addComponent(light2Component)
+        rootGameObject.addChild(light2GameObject)
+        lightsRenderingRepository.addDirectionalLight(camera, light2Component)*/
+    }
+
     private fun initCelestialSphere() {
         val gameObject = GameObject()
 
@@ -85,9 +113,7 @@ class CelestialSphereScene(
         val mesh = meshLoadingRepository.loadMesh("earth.obj")
         gameObject.addComponent(mesh)
 
-        gameObject.addComponent(
-            MaterialComponent("colorGreen", isDoubleSided = true, isWireframe = true, isUnlit = true)
-        )
+        gameObject.addComponent(MaterialComponent("colorGreen"))
 
         meshRenderingRepository.addMeshToRenderList(perspectiveCamera, mesh)
 

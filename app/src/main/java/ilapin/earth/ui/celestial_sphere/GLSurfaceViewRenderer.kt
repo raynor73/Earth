@@ -15,6 +15,7 @@ class GLSurfaceViewRenderer(private val context: Context) : BaseGLSurfaceRendere
             renderingEngine,
             renderingEngine,
             renderingEngine,
+            renderingEngine,
             ObjMeshLoadingRepository(context),
             TouchEventFromMessageQueueRepository(messageQueue),
             AndroidDisplayMetricsRepository(context)
