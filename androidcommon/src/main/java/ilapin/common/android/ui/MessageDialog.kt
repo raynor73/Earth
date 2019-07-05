@@ -1,4 +1,4 @@
-package ilapin.earth.ui.common
+package ilapin.common.android.ui
 
 import android.app.Dialog
 import android.content.Context

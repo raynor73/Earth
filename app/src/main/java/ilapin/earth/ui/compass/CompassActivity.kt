@@ -16,6 +16,7 @@ import ilapin.common.acceleration.AccelerationRepository
 import ilapin.common.android.acceleration.SensorAccelerationRepository
 import ilapin.common.android.magneticfield.SensorMagneticFieldRepository
 import ilapin.common.android.orientation.SoftwareOrientationRepository
+import ilapin.common.android.ui.MessageDialog
 import ilapin.common.magneticfield.MagneticField
 import ilapin.common.magneticfield.MagneticFieldRepository
 import ilapin.common.orientation.OrientationRepository
@@ -24,7 +25,6 @@ import ilapin.earth.domain.camera.CameraPermission
 import ilapin.earth.domain.camera.CameraPermissionResolver
 import ilapin.earth.frameworkdependent.camera.LocalCameraPermissionRepository
 import ilapin.earth.ui.AppNavigation
-import ilapin.earth.ui.common.MessageDialog
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.activity_compass.*
 import kotlinx.android.synthetic.main.activity_main.containerLayout

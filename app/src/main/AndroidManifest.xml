@@ -4,9 +4,14 @@
           package="ilapin.earth">
 
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
-    <uses-feature android:name="android.hardware.camera" android:required="true" />
-    <uses-feature android:glEsVersion="0x00020000" android:required="true"/>
+    <uses-feature
+            android:name="android.hardware.camera"
+            android:required="true"/>
+    <uses-feature
+            android:glEsVersion="0x00020000"
+            android:required="true"/>
 
     <application
             android:name=".App"
@@ -18,13 +23,26 @@
             android:theme="@style/AppTheme"
             tools:ignore="GoogleAppIndexingWarning">
         <activity
-                android:name=".ui.camera.CameraActivity"
-                android:screenOrientation="portrait">
-            <!--<intent-filter>
+                android:name=".ui.celestial_sphere.CelestialSphereActivity"
+                android:screenOrientation="landscape"
+                android:theme="@style/NoAppBarTheme">
+            <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
                 <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>-->
+            </intent-filter>
+        </activity>
+        <activity
+                android:name=".ui.camera.CameraActivity"
+                android:screenOrientation="portrait">
+
+            <!--
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+            -->
         </activity>
         <activity
                 android:name=".ui.terrain.MainActivity"
@@ -42,11 +60,11 @@
                 android:name=".ui.compass.CompassActivity"
                 android:screenOrientation="portrait"
                 android:theme="@style/NoAppBarTheme">
-            <intent-filter>
+            <!--<intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
                 <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
+            </intent-filter>-->
         </activity>
         <activity
                 android:name=".ui.FullscreenActivity"

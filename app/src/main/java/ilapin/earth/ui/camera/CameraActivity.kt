@@ -9,7 +9,7 @@ import android.provider.Settings
 import android.support.v7.app.AppCompatActivity
 import android.view.View
 import ilapin.earth.R
-import ilapin.earth.domain.camera.CameraPermission
+import ilapin.common.permissions.PermissionRequestState
 import ilapin.earth.domain.camera.CameraPermissionResolver
 import ilapin.earth.frameworkdependent.camera.LocalCameraPermissionRepository
 import io.reactivex.disposables.CompositeDisposable
@@ -31,13 +31,13 @@ class CameraActivity : AppCompatActivity() {
 
         subscriptions.add(cameraPermissionResolver.permission.subscribe { permission ->
             when (permission) {
-                CameraPermission.GRANTED -> {
+                PermissionRequestState.GRANTED -> {
                     renderer?.putMessage(GLSurfaceViewRenderer.Message.CAMERA_PERMISSION_GRANTED)
 
                     enableCameraButton.visibility = View.GONE
                     gotoPermissionSettingsLayout.visibility = View.GONE
                 }
-                CameraPermission.DENIED -> {
+                PermissionRequestState.DENIED -> {
                     renderer?.putMessage(GLSurfaceViewRenderer.Message.CAMERA_PERMISSION_DENIED)
 
                     if (cameraPermissionResolver.shouldShowRationale()) {

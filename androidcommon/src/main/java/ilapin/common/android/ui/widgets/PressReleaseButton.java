@@ -1,4 +1,4 @@
-package ilapin.common.android.widgets;
+package ilapin.common.android.ui.widgets;
 
 import android.annotation.SuppressLint;
 import android.content.Context;

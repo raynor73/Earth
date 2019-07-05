@@ -6,7 +6,7 @@ import android.net.Uri
 import android.support.v7.app.AppCompatActivity
 import android.widget.Toast
 import ilapin.earth.R
-import ilapin.earth.ui.common.MessageDialog
+import ilapin.common.android.ui.MessageDialog
 
 class AppNavigation {
 
