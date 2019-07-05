@@ -64,7 +64,10 @@ class RenderingEngine(
 
     override fun addMeshToRenderList(camera: CameraComponent, mesh: MeshComponent) {
         val gameObject = mesh.gameObject ?: throw NoParentGameObjectError()
-        val meshRendererComponent = MeshRendererComponent(uniformFillingVisitor)
+        val meshRendererComponent = MeshRendererComponent(
+            uniformFillingVisitor,
+            AndroidDisplayMetricsRepository(context)
+        )
         gameObject.addComponent(meshRendererComponent)
         meshToMeshRenderer[mesh] = meshRendererComponent
         cameraToMeshRenderers.put(camera, meshRendererComponent)

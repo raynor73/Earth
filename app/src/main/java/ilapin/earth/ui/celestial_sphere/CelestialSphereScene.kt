@@ -1,10 +1,14 @@
 package ilapin.earth.ui.celestial_sphere
 
+import ilapin.common.input.TouchScreenRepository
 import ilapin.common.meshloader.MeshLoadingRepository
+import ilapin.common.renderingengine.DisplayMetricsRepository
 import ilapin.common.renderingengine.MeshRenderingRepository
 import ilapin.common.renderingengine.RenderingSettingsRepository
 import ilapin.common.renderingengine.TextureRepository
+import ilapin.earth.domain.celestial_sphere.ScrollController
 import ilapin.engine3d.*
+import io.reactivex.disposables.CompositeDisposable
 import org.joml.Quaternionf
 import org.joml.Vector3f
 
@@ -12,8 +16,11 @@ class CelestialSphereScene(
     renderingSettingsRepository: RenderingSettingsRepository,
     private val meshRenderingRepository: MeshRenderingRepository,
     private val textureRepository: TextureRepository,
-    private val meshLoadingRepository: MeshLoadingRepository
+    private val meshLoadingRepository: MeshLoadingRepository,
+    touchScreenRepository: TouchScreenRepository,
+    displayMetricsRepository: DisplayMetricsRepository
 ) : Scene {
+    private val tmpQuaternion = Quaternionf()
 
     private val rootGameObject = GameObject().apply {
         addComponent(TransformationComponent(Vector3f(), Quaternionf().identity(), Vector3f(1f, 1f, 1f)))
@@ -29,6 +36,12 @@ class CelestialSphereScene(
 
     override val cameras: List<CameraComponent> = listOf(perspectiveCamera)
 
+    private val subscriptions = CompositeDisposable()
+
+    private val scrollController = ScrollController().apply { subscriptions.add(this) }
+
+    private val pixelDensityFactor = displayMetricsRepository.getPixelDensityFactor()
+
     init {
         renderingSettingsRepository.setClearColor(0.5f, 0.5f, 0.5f, 1.0f)
         renderingSettingsRepository.setAmbientColor(0.1f, 0.1f, 0.1f)
@@ -38,6 +51,17 @@ class CelestialSphereScene(
         initTextures()
 
         initCelestialSphere()
+
+        touchScreenRepository.touchEvents().subscribe(scrollController.touchEventsObserver)
+
+        subscriptions.add(scrollController.scrollEvent.subscribe { scrollEvent ->
+            val yAngle = Math.toRadians((scrollEvent.dx / pixelDensityFactor).toDouble())
+            val xAngle = Math.toRadians((scrollEvent.dy / pixelDensityFactor).toDouble())
+            tmpQuaternion.set(celestialSphereTransform.rotation)
+            tmpQuaternion.rotateLocalY(yAngle.toFloat())
+            tmpQuaternion.rotateLocalX(xAngle.toFloat())
+            celestialSphereTransform.rotation = tmpQuaternion
+        })
     }
 
     fun setupPerspectiveCamera() {
@@ -84,6 +108,6 @@ class CelestialSphereScene(
     }
 
     override fun onCleared() {
-        // do nothing
+        subscriptions.clear()
     }
 }

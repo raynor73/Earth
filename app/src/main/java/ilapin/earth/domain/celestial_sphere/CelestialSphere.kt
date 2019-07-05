@@ -1,9 +1,8 @@
 package ilapin.earth.domain.celestial_sphere
 
 import ilapin.common.location.Location
+import ilapin.common.rx.BaseObserver
 import io.reactivex.Observable
-import io.reactivex.Observer
-import io.reactivex.disposables.Disposable
 import io.reactivex.subjects.BehaviorSubject
 import org.joml.Quaternionf
 import org.joml.Quaternionfc
@@ -17,23 +16,11 @@ class CelestialSphere {
 
     val modelRotation: Observable<Quaternionfc> = modelRotationSubject
 
-    val locationObserver = object : Observer<Location> {
-
-        override fun onComplete() {
-            // do nothing
-        }
-
-        override fun onSubscribe(d: Disposable) {
-            // do nothing
-        }
+    val locationObserver = object : BaseObserver<Location>() {
 
         override fun onNext(t: Location) {
             lastLocation = t
 
-        }
-
-        override fun onError(e: Throwable) {
-            // do nothing
         }
     }
 

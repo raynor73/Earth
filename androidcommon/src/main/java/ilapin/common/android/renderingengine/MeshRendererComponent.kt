@@ -1,13 +1,18 @@
 package ilapin.common.android.renderingengine
 
 import android.opengl.GLES20
+import ilapin.common.renderingengine.DisplayMetricsRepository
 import ilapin.engine3d.*
 import org.joml.Matrix4f
 import java.nio.Buffer
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
+import kotlin.math.ceil
 
-class MeshRendererComponent(private val uniformFillingVisitor: UniformFillingVisitor) : GameObjectComponent() {
+class MeshRendererComponent(
+    private val uniformFillingVisitor: UniformFillingVisitor,
+    displayMetricsRepository: DisplayMetricsRepository
+) : GameObjectComponent() {
 
     companion object {
 
@@ -25,6 +30,8 @@ class MeshRendererComponent(private val uniformFillingVisitor: UniformFillingVis
 
     private val bufferMatrix = Matrix4f()
     private val bufferFloatArray = FloatArray(16)
+
+    private val lineWidth = ceil(displayMetricsRepository.getPixelDensityFactor())
 
     fun render(camera: CameraComponent, shader: Shader, light: GameObjectComponent?) {
         if (!isEnabled) {
@@ -164,11 +171,11 @@ class MeshRendererComponent(private val uniformFillingVisitor: UniformFillingVis
             GLES20.glEnable(GLES20.GL_CULL_FACE)
         }
         val mode = if (material.isWireframe) {
-            GLES20.GL_LINE_STRIP
+            GLES20.GL_LINE_LOOP
         } else {
             GLES20.GL_TRIANGLES
         }
-        GLES20.glLineWidth(2f)
+        GLES20.glLineWidth(lineWidth)
         GLES20.glDrawElements(mode, numberOfIndices, GLES20.GL_UNSIGNED_SHORT, indexBuffer)
 
         GLES20.glDisableVertexAttribArray(uvHandle)

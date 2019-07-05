@@ -4,7 +4,9 @@ import android.content.res.Configuration
 import android.opengl.GLSurfaceView
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.view.MotionEvent
 import android.view.View
+import ilapin.common.input.TouchEvent
 import ilapin.earth.R
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -19,6 +21,21 @@ class CelestialSphereActivity : AppCompatActivity() {
         if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
             renderer = GLSurfaceViewRenderer(this)
             val glView = GLSurfaceView(this)
+            glView.setOnTouchListener { _, event ->
+                renderer?.putMessage(
+                    TouchEvent(
+                        when (event.action) {
+                            MotionEvent.ACTION_DOWN -> TouchEvent.Action.DOWN
+                            MotionEvent.ACTION_MOVE -> TouchEvent.Action.MOVE
+                            MotionEvent.ACTION_UP -> TouchEvent.Action.UP
+                            else -> TouchEvent.Action.CANCEL
+                        },
+                        event.x.toInt(),
+                        event.y.toInt()
+                    )
+                )
+                true
+            }
             glView.setEGLContextClientVersion(2)
             glView.setRenderer(renderer)
             glView.renderMode = GLSurfaceView.RENDERMODE_CONTINUOUSLY
