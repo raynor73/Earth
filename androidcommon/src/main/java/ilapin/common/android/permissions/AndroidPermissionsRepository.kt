@@ -1,6 +1,5 @@
 package ilapin.common.android.permissions
 
-import android.Manifest
 import android.content.pm.PackageManager
 import android.support.v4.app.ActivityCompat
 import android.support.v7.app.AppCompatActivity
@@ -24,12 +23,5 @@ class AndroidPermissionsRepository(private val activity: AppCompatActivity) : Pe
 
     override fun requestPermission(permission: Permission): Single<Boolean> {
         return permissions.request(toAndroidPermission(permission)).firstOrError()
-    }
-
-    private fun toAndroidPermission(permission: Permission): String {
-        return when (permission) {
-            Permission.CAMERA -> Manifest.permission.CAMERA
-            Permission.LOCATION -> Manifest.permission.ACCESS_FINE_LOCATION
-        }
     }
 }

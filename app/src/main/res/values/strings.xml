@@ -37,4 +37,10 @@
     <string name="magnetic_sensor_calibration_required_message">Ухудшились показания сенсора магнитного поля, необходимо откалибровать сенсор.</string>
     <string name="magnetic_sensor_calibration_required_how">Как это сделать?</string>
 
+    <string name="camera_permission_status">Доступ к камере: %1$s</string>
+    <string name="location_permission_status">Доступ к местоположению: %1$s</string>
+    <string name="permission_status_unknown">\???</string>
+    <string name="permission_status_granted">Есть</string>
+    <string name="permission_status_denied">Нет</string>
+
 </resources>

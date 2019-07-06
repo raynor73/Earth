@@ -1,14 +1,14 @@
-package ilapin.earth.domain.compass
+package ilapin.common.math
 
+import ilapin.common.rx.BaseObserver
 import io.reactivex.Observable
-import io.reactivex.Observer
 import io.reactivex.disposables.Disposable
 import io.reactivex.subjects.PublishSubject
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics
 import org.joml.Vector3f
 import org.joml.Vector3fc
 
-class VectorSmoother(windowSize: Int) : Observer<Vector3fc>, Disposable {
+class VectorSmoother(windowSize: Int) : BaseObserver<Vector3fc>(), Disposable {
 
     private val tmpVector = Vector3f()
 
@@ -23,11 +23,10 @@ class VectorSmoother(windowSize: Int) : Observer<Vector3fc>, Disposable {
     val smoothedVector: Observable<Vector3fc>
         get() = vectorSubject
 
-    override fun onComplete() {
-        throw RuntimeException("Unexpected completion")
-    }
-
     override fun onSubscribe(d: Disposable) {
+        if (disposable != null) {
+            throw IllegalStateException("Trying to subscribe more than once")
+        }
         disposable = d
     }
 
@@ -41,10 +40,6 @@ class VectorSmoother(windowSize: Int) : Observer<Vector3fc>, Disposable {
         tmpVector.z = zStatistics.mean.toFloat()
 
         vectorSubject.onNext(tmpVector)
-    }
-
-    override fun onError(e: Throwable) {
-        throw RuntimeException("Unexpected error", e)
     }
 
     override fun isDisposed(): Boolean {

@@ -6,4 +6,30 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#ff00ff"
-        tools:context=".ui.celestial_sphere.CelestialSphereActivity" />
+        tools:context=".ui.celestial_sphere.CelestialSphereActivity">
+
+    <LinearLayout
+            android:id="@+id/permissionsStatusContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:orientation="vertical"
+            tools:ignore="UselessParent">
+
+        <TextView
+                android:id="@+id/cameraPermissionView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                tools:text="@string/camera_permission_status"/>
+
+        <TextView
+                android:id="@+id/locationPermissionView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                tools:text="@string/location_permission_status"/>
+
+    </LinearLayout>
+
+</FrameLayout>

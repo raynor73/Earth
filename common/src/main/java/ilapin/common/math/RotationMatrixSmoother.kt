@@ -1,17 +1,16 @@
-package ilapin.earth.domain.compass
+package ilapin.common.math
 
+import ilapin.common.rx.BaseObserver
 import io.reactivex.Observable
-import io.reactivex.Observer
 import io.reactivex.disposables.Disposable
 import io.reactivex.subjects.PublishSubject
 import org.joml.Matrix4f
 import org.joml.Matrix4fc
 import org.joml.Vector3f
 import org.joml.Vector3fc
-import java.lang.RuntimeException
 import java.util.*
 
-class RotationMatrixSmoother(private val windowSize: Int) : Observer<Matrix4fc>, Disposable {
+class RotationMatrixSmoother(private val windowSize: Int) : BaseObserver<Matrix4fc>(), Disposable {
 
     private val rotationMatrixSubject = PublishSubject.create<Matrix4fc>()
 
@@ -27,11 +26,10 @@ class RotationMatrixSmoother(private val windowSize: Int) : Observer<Matrix4fc>,
     val smoothedRotationMatrix: Observable<Matrix4fc>
         get() = rotationMatrixSubject
 
-    override fun onComplete() {
-        throw RuntimeException("Unexpected completion")
-    }
-
     override fun onSubscribe(d: Disposable) {
+        if (disposable != null) {
+            throw IllegalStateException("Trying to subscribe more than once")
+        }
         disposable = d
     }
 
@@ -40,7 +38,12 @@ class RotationMatrixSmoother(private val windowSize: Int) : Observer<Matrix4fc>,
         if (matrices.size > windowSize) {
             matrices.removeFirst()
         }
-        val result = matrices.fold(PlaneVectors(Vector3f(), Vector3f())) { accumulator, matrix ->
+        val result = matrices.fold(
+            PlaneVectors(
+                Vector3f(),
+                Vector3f()
+            )
+        ) { accumulator, matrix ->
             xAxis.set(1f, 0f, 0f)
             yAxis.set(0f, 1f, 0f)
             xAxis.mulDirection(matrix)
@@ -71,10 +74,6 @@ class RotationMatrixSmoother(private val windowSize: Int) : Observer<Matrix4fc>,
         tmpMatrix.m22(zAxis.z)
 
         rotationMatrixSubject.onNext(tmpMatrix.invert())
-    }
-
-    override fun onError(e: Throwable) {
-        throw RuntimeException("Unexpected error", e)
     }
 
     override fun isDisposed(): Boolean {

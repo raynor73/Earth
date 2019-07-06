@@ -1,6 +1,8 @@
 package ilapin.earth.domain.compass
 
 import ilapin.common.acceleration.AccelerationRepository
+import ilapin.common.math.RotationMatrixSmoother
+import ilapin.common.math.VectorSmoother
 import ilapin.common.meshloader.MeshLoadingRepository
 import ilapin.common.orientation.OrientationRepository
 import ilapin.common.renderingengine.*
