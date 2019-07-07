@@ -73,7 +73,7 @@ class RotationMatrixSmoother(private val windowSize: Int) : BaseObserver<Matrix4
         tmpMatrix.m12(zAxis.y)
         tmpMatrix.m22(zAxis.z)
 
-        rotationMatrixSubject.onNext(tmpMatrix.invert())
+        rotationMatrixSubject.onNext(Matrix4f(tmpMatrix.invert()))
     }
 
     override fun isDisposed(): Boolean {
