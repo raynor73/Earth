@@ -47,7 +47,7 @@ class CelestialSphere(
                 BiFunction<Matrix4fc, Location, Quaternionf> { orientationMatrix, location ->
                     tmpMatrix.set(orientationMatrix).invert()
                     tmpQuaternion.setFromUnnormalized(tmpMatrix)
-                    tmpQuaternion.rotateLocalX(Math.toRadians(90f - location.latitude).toFloat())
+                    tmpQuaternion.rotateLocalX(Math.toRadians(location.latitude).toFloat())
                     tmpQuaternion
                 }
             ).subscribe { rotation ->
