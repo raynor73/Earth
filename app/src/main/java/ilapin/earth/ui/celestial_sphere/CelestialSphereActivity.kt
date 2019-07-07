@@ -5,27 +5,32 @@ import android.content.res.Configuration
 import android.hardware.SensorManager
 import android.opengl.GLSurfaceView
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
 import android.view.MotionEvent
 import android.view.View
 import ilapin.common.android.acceleration.SensorAccelerationRepository
-import ilapin.common.android.location.AndroidMultiplePermissionsRepository
+import ilapin.common.android.location.AndroidLocationsRepository
 import ilapin.common.android.magneticfield.SensorMagneticFieldRepository
 import ilapin.common.android.orientation.SoftwareOrientationRepository
+import ilapin.common.android.permissions.AndroidMultiplePermissionsRepository
+import ilapin.common.android.ui.RxLifecycleEventsActivity
 import ilapin.common.input.TouchEvent
+import ilapin.common.location.LocationsRepository
 import ilapin.common.orientation.OrientationRepository
 import ilapin.common.permissions.MultiplePermissionsResolver
 import ilapin.common.permissions.Permission
 import ilapin.earth.R
+import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.functions.BiFunction
 import kotlinx.android.synthetic.main.activity_celestial_sphere.*
 import kotlinx.android.synthetic.main.activity_main.containerLayout
 
-class CelestialSphereActivity : AppCompatActivity() {
+class CelestialSphereActivity : RxLifecycleEventsActivity() {
 
     private var renderer: GLSurfaceViewRenderer? = null
 
     private lateinit var orientationRepository: OrientationRepository
+    private lateinit var locationsRepository: LocationsRepository
 
     private val permissionsResolver = MultiplePermissionsResolver(
         listOf(Permission.CAMERA, Permission.LOCATION),
@@ -69,6 +74,8 @@ class CelestialSphereActivity : AppCompatActivity() {
             SensorMagneticFieldRepository(sensorManager)
         )
 
+        locationsRepository = AndroidLocationsRepository(this)
+
         permanentSubscriptions.add(permissionsResolver.permissionsResult.subscribe { permissionsResult ->
             permissionsResult.forEach { (permission, status) ->
                 when (permission) {
@@ -92,6 +99,27 @@ class CelestialSphereActivity : AppCompatActivity() {
             }
         })
 
+        permanentSubscriptions.add(
+            Observable.combineLatest(
+                lifecycleEvents,
+                permissionsResolver.permissionsResult,
+                BiFunction<Event, Map<Permission, Boolean?>, Unit> { lifecycleEvent, permissions ->
+                    if (lifecycleEvent == Event.ON_RESUME) {
+                        pausableSubscriptions.add(orientationRepository.orientation().subscribe { orientation ->
+                            renderer?.putMessage(orientation)
+                        })
+                        if (permissions[Permission.LOCATION] == true) {
+                            pausableSubscriptions.add(locationsRepository.locations().subscribe { location ->
+                                renderer?.putMessage(location)
+                            })
+                        }
+                    } else {
+                        pausableSubscriptions.clear()
+                    }
+                }
+            ).subscribe()
+        )
+
         permissionsResolver.resolve()
     }
 
@@ -100,17 +128,7 @@ class CelestialSphereActivity : AppCompatActivity() {
 
         switchToImmersiveMode()
 
-        pausableSubscriptions.add(orientationRepository.orientation().subscribe { orientation ->
-            renderer?.putMessage(orientation)
-        })
-
         permissionsResolver.check()
-    }
-
-    override fun onPause() {
-        super.onPause()
-
-        pausableSubscriptions.clear()
     }
 
     override fun onDestroy() {

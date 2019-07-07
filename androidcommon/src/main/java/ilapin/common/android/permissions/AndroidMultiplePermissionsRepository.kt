@@ -1,11 +1,10 @@
-package ilapin.common.android.location
+package ilapin.common.android.permissions
 
 import android.content.pm.PackageManager
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import com.tbruyelle.rxpermissions2.RxPermissions
-import ilapin.common.android.permissions.toAndroidPermission
 import ilapin.common.permissions.MultiplePermissionsRepository
 import ilapin.common.permissions.Permission
 import io.reactivex.Observable

@@ -1,5 +1,6 @@
 package ilapin.earth.ui.celestial_sphere
 
+import ilapin.common.location.LocationsRepository
 import ilapin.common.meshloader.MeshLoadingRepository
 import ilapin.common.orientation.OrientationRepository
 import ilapin.common.renderingengine.MeshRenderingRepository
@@ -18,7 +19,8 @@ class CelestialSphereScene(
     private val textureRepository: TextureRepository,
     private val textureLoadingRepository: TextureLoadingRepository,
     private val meshLoadingRepository: MeshLoadingRepository,
-    orientationRepository: OrientationRepository
+    orientationRepository: OrientationRepository,
+    locationsRepository: LocationsRepository
 ) : Scene {
     //private val tmpQuaternion = Quaternionf()
     //private val tmpMatrix = Matrix4f()
@@ -28,9 +30,9 @@ class CelestialSphereScene(
     }
 
     private val celestialSphereTransform = TransformationComponent(
-        Vector3f(0f, -0.5f, -3f),
+        Vector3f(0f, 0f, 0f),
         Quaternionf().identity(),
-        Vector3f(1f, 1f, 1f)
+        Vector3f(10f, 10f, 10f)
     )
 
     private val perspectiveCamera = PerspectiveCameraComponent()
@@ -43,7 +45,7 @@ class CelestialSphereScene(
 
     //private val pixelDensityFactor = displayMetricsRepository.getPixelDensityFactor()
 
-    private val celestialSphere = CelestialSphere(orientationRepository)
+    private val celestialSphere = CelestialSphere(orientationRepository, locationsRepository)
 
     init {
         renderingSettingsRepository.setClearColor(0f, 0f, 0f, 1.0f)

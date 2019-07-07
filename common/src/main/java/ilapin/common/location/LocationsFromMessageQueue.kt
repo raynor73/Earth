@@ -3,9 +3,9 @@ package ilapin.common.location
 import ilapin.common.messagequeue.MessageQueue
 import io.reactivex.Observable
 
-class LocationFromMessageQueue(private val messageQueue: MessageQueue) : LocationRepository {
+class LocationsFromMessageQueue(private val messageQueue: MessageQueue) : LocationsRepository {
 
-    override fun location(): Observable<Location> {
+    override fun locations(): Observable<Location> {
         return messageQueue
             .messages()
             .filter { message -> message is Location }
